@@ -1,7 +1,7 @@
 <div class="h-full flex items-center">
     <!-- BEGIN: Logo -->
     <a href="" class="logo -intro-x hidden md:flex xl:w-[180px] block">
-        <img alt="loho" class="logo__image w-6" src="{{ asset('dashboardAsset/dist/images/logo.svg') }}">
+        <img alt="loho" class="logo__image w-6" src="{{ asset('motherbase-logo-picture.png') }}">
         <span class="logo__text text-white text-lg ml-3"> Motherbase </span>
     </a>
     <!-- END: Logo -->
