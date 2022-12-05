@@ -1,5 +1,5 @@
 {
-    "Inventory": true,
+    "Inventory": false,
     "Blog": true,
-    "Report": true
+    "Report": false
 }

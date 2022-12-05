@@ -3,7 +3,7 @@
 <!-- BEGIN: Head -->
 <head>
     <meta charset="utf-8">
-    <link href="{{asset('dashboardAsset/dist/images/logo.svg')}}" rel="shortcut icon">
+    <link href="{{ asset('motherbase-logo-picture.png') }}" rel="shortcut icon">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - Motherbase</title>
     <!-- BEGIN: CSS Assets-->
