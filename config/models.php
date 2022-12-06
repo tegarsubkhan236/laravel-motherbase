@@ -39,7 +39,7 @@ return [
         */
 
 //        'namespace' => 'App\Models',
-        'namespace' => 'Modules\Blog\Http\Models',
+        'namespace' => 'Modules\Inventory\Http\Models',
 
         /*
         |--------------------------------------------------------------------------

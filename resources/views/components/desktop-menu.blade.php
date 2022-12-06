@@ -59,10 +59,10 @@
                 @include('inventory::layouts.dekstop-menu')
             @endif
         @endcan
-        @can("view_report")
-            @if(Module::collections()->has('Report'))
-                @include('report::layouts.dekstop-menu')
-            @endif
-        @endcan
+{{--        @can("view_report")--}}
+{{--            @if(Module::collections()->has('Report'))--}}
+{{--                @include('report::layouts.dekstop-menu')--}}
+{{--            @endif--}}
+{{--        @endcan--}}
     </ul>
 </nav>

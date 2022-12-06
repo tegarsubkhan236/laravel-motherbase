@@ -6,7 +6,7 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
-class InventoryController extends Controller
+class InvReceiveController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        return view('inventory::index');
+        return view('inventory::pages.receive.index');
     }
 
     /**
