@@ -9,4 +9,25 @@
 
 ## About Motherbase
 
-My mother is my root, my foundation. She planted the seed that I base my life on, and that is the belief that the ability to achieve starts in your mind. —Michael Jordan
+My mother is my root, my foundation. She planted the seed that I base my life on, and that is the belief that the
+ability to achieve starts in your mind. —Michael Jordan
+
+## Available Command
+
+To Run this program
+
+```bash
+git clone git@github.com:tegarsubkhan236/motherbase.git
+cd motherbase
+composer install
+cp .env-example .env
+php artisan key:generate
+php artisan serve
+```
+
+Run Migration and Seeders
+
+```bash
+php artisan migrate:fresh --seed
+php artisan module:migrate-refresh <ModulesName> --seed
+```
