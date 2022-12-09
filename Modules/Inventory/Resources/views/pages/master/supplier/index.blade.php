@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    @include('vendor.alert.basic')
     <div class="grid grid-cols-12 gap-6 mt-5">
         <div class="col-span-12 xl:col-span-3" id="pochita_form_div"></div>
         <div class="col-span-12 xl:col-span-9">
