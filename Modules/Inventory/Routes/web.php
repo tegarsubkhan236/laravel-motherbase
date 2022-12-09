@@ -13,12 +13,11 @@ Route::prefix('inventory')->name('inventory.')->group(function () {
     Route::prefix('master')->name('master.')->group(function () {
         Route::prefix('supplier')->name('supplier.')->group(function () {
             Route::get('/', [InvSupplierController::class, 'index'])->name('index');
-            Route::get('/create', [InvSupplierController::class, 'create'])->name('create');
+            Route::get('/show_form', [InvSupplierController::class, 'show_form'])->name('show_form');
+            Route::get('/show_table', [InvSupplierController::class, 'show_table'])->name('show_table');
             Route::post('/store', [InvSupplierController::class, 'store'])->name('store');
-            Route::get('/{inv_supplier}/detail', [InvSupplierController::class, 'show'])->name('detail');
-            Route::get('/{inv_supplier}/edit', [InvSupplierController::class, 'edit'])->name('edit');
-            Route::put('/{inv_supplier}/update', [InvSupplierController::class, 'update'])->name('update');
-            Route::delete('/{inv_supplier}/delete', [InvSupplierController::class, 'delete'])->name('delete');
+            Route::put('/update', [InvSupplierController::class, 'update'])->name('update');
+            Route::delete('/delete', [InvSupplierController::class, 'delete'])->name('delete');
         });
         Route::prefix('item')->name('item.')->group(function () {
             Route::get('/', [InvItemController::class, 'index'])->name('index');

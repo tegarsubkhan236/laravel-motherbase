@@ -2749,20 +2749,7 @@ select{
     --tw-bg-opacity: 1;
     background-color: rgb(255 255 255 / var(--tw-bg-opacity));
   }
-.custom-box {
-    box-shadow: 0px 3px 20px #0000000b;
-    position: relative;
-    border-radius: 0.375rem;
-    border-color: transparent;
-    --tw-bg-opacity: 1;
-    background-color: rgb(var(--color-slate-200) / var(--tw-bg-opacity));
-}
 .dark .box{
-    border-color: transparent;
-    --tw-bg-opacity: 1;
-    background-color: rgb(var(--color-darkmode-600) / var(--tw-bg-opacity));
-}
-.dark .custom-box{
     border-color: transparent;
     --tw-bg-opacity: 1;
     background-color: rgb(var(--color-darkmode-600) / var(--tw-bg-opacity));
