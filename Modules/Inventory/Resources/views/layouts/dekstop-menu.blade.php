@@ -18,20 +18,20 @@
             <ul class="{{ request()->routeIs('inventory.master*') ? 'side-menu__sub-open': ''}}">
                 <li>
                     <a href="{{ route('inventory.master.supplier.index') }}" class="side-menu {{ request()->routeIs('inventory.master.supplier*') ? 'side-menu--active' : ''}}">
-                        <div class="menu__icon"> <i data-lucide="zap"></i> </div>
-                        <div class="menu__title">Supplier</div>
+                        <div class="side-menu__icon"> <i data-lucide="zap"></i> </div>
+                        <div class="side-menu__title">Supplier</div>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('inventory.master.item.index') }}" class="side-menu {{ request()->routeIs('inventory.master.item*') ? 'side-menu--active' : ''}}">
-                        <div class="menu__icon"> <i data-lucide="zap"></i> </div>
-                        <div class="menu__title">Items</div>
+                        <div class="side-menu__icon"> <i data-lucide="zap"></i> </div>
+                        <div class="side-menu__title">Items</div>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('inventory.master.stock.index') }}" class="side-menu {{ request()->routeIs('inventory.master.stock*') ? 'side-menu--active' : ''}}">
-                        <div class="menu__icon"> <i data-lucide="zap"></i> </div>
-                        <div class="menu__title">Stocks</div>
+                        <div class="side-menu__icon"> <i data-lucide="zap"></i> </div>
+                        <div class="side-menu__title">Stocks</div>
                     </a>
                 </li>
             </ul>

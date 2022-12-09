@@ -44,7 +44,7 @@
     <!-- BEGIN: Dark Mode Switcher-->
     <div class="intro-x relative mr-4 sm:mr-6">
         <div data-url="/toggle-theme" class="dark-mode-switcher cursor-pointer shadow-md custom-box dark:bg-dark-2 border rounded-full w-40 h-10 flex items-center justify-center">
-            <div class="mr-4 text-gray-700 dark:text-gray-300">Dark Mode</div>
+            <div class="mr-4 text-white dark:text-gray-300">Dark Mode</div>
             <div id="toggle_theme" type="checkbox" class="dark-mode-switcher__toggle dark-mode-switcher__toggle--{{ session()->get('theme') == 'dark' ? 'active' : '' }} border"></div>
         </div>
     </div>

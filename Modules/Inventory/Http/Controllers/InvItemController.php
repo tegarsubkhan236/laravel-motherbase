@@ -27,9 +27,9 @@ class InvItemController extends Controller
         if (!empty($req['perPage'])){
             $perPage = $req['perPage'];
         }
-//        if (!empty($req['search'])){
-//            $data = $data->where('name', 'like', '%'.$req['search'].'%');
-//        }
+        if (!empty($req['search'])){
+            $data = $data->where('name', 'like', '%'.$req['search'].'%');
+        }
         $data = $data->orderBy('id','desc')->paginate($perPage);
         return view('inventory::pages.master.item.index', [
             'title' => 'Item',

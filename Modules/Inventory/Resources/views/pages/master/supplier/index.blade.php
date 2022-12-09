@@ -1,112 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2 class="intro-y text-lg font-medium mt-10">
-        {{$title}} Data
-    </h2>
     @include('vendor.alert.basic')
     <div class="grid grid-cols-12 gap-6 mt-5">
-        <div class="intro-y col-span-12 flex flex-wrap sm:flex-nowrap items-center mt-2">
-            @can('ms_create_user')
-                <a href="{{ route("$addRoute") }}">
-                    <button class="btn btn-primary shadow-md mr-2">Add New {{ $title }}</button>
-                </a>
-            @endcan
-            <div class="hidden md:block mx-auto text-slate-500"></div>
-            <div class="w-full sm:w-auto mt-3 sm:mt-0 sm:ml-auto md:ml-0">
-                <form action="{{ route($searchRoute) }}" method="GET">
-                    @csrf
-                    <div class="w-56 relative text-slate-500">
-                        <label>
-                            <input name="search"
-                                   value="{{ !empty(request()->has('search')) ? request()->get('search') : ''}}"
-                                   type="text" class="form-control w-56 box pr-10" placeholder="Search...">
-                        </label>
-                        <i class="w-4 h-4 absolute my-auto inset-y-0 mr-3 right-0" data-lucide="search"></i>
+        <div class="col-span-12 xl:col-span-3" id="pochita_form_div"></div>
+        <div class="col-span-12 xl:col-span-9">
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-12 flex flex-wrap sm:flex-nowrap items-center">
+                    <div>
+                        <button type="button" class="btn btn-outline-primary dark:text-white" id="pochita_add_button">
+                            <i class="w-6 h-6 mr-2" data-lucide="plus-circle"></i>
+                            New Data
+                        </button>
+                        <button type="button" class="btn btn-outline-primary dark:text-white" id="pochita_filter_button">
+                            <i class="w-6 h-6 mr-2" data-lucide="search"></i>
+                            Filter
+                        </button>
+                        <input type="hidden" name="hidden_page" id="hidden_page" value="1"/>
                     </div>
-                </form>
-            </div>
-        </div>
-        <!-- BEGIN: Data List -->
-        <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-            <table class="table table-report -mt-2">
-                <thead>
-                <tr>
-                    <th class="whitespace-nowrap">#</th>
-                    <th class="whitespace-nowrap">NAME</th>
-                    <th class="whitespace-nowrap">CONTACT</th>
-                    <th class="whitespace-nowrap">ADDRESS</th>
-                    <th class="text-center whitespace-nowrap">STATUS</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($data as $item)
-                    <tr class="intro-x">
-                        <td>{{ $item->id }}</td>
-                        <td>
-                            <a href="" class="font-medium whitespace-nowrap">{{ $item->name }}</a>
-                            <div class="text-slate-500 text-xs whitespace-nowrap mt-0.5">{{ $item->cperson }}</div>
-                        </td>
-                        <td>{{ $item->contact }}</td>
-                        <td>{{ $item->address }}</td>
-                        <td class="w-40">
-                            <div
-                                class="flex items-center justify-center {{ $item->status == \Modules\Inventory\Casts\SupplierStatus::ACTIVE ? "text-success" : "text-danger"}}">
-                                <i data-lucide="{{ $item->status == \Modules\Inventory\Casts\SupplierStatus::ACTIVE ? "check-square" : "square"}}"
-                                   class="w-4 h-4 mr-2"></i>
-                                {{\Modules\Inventory\Casts\SupplierStatus::lang($item->status)}}
-                            </div>
-                        </td>
-                        <td class="table-report__action w-56">
-                            <div class="flex justify-center items-center">
-                                <a class="tooltip flex items-center text-warning mr-3" title="Edit {{ $title }}"
-                                   href="{{ route('inventory.master.supplier.edit', [$item->id]) }}">
-                                    <i data-lucide="check-square" class="w-4 h-4 mr-1"></i>
-                                </a>
-                                <a class="tooltip flex items-center text-danger" title="Delete {{ $title }}"
-                                   href="#"
-                                   data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal">
-                                    <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-        </div>
-        <!-- END: Data List -->
-        <!-- BEGIN: Pagination -->
-        <div class="intro-y col-span-12 flex flex-wrap sm:flex-row sm:flex-nowrap items-center">
-            {{ $data->links('pagination::tailwind') }}
-        </div>
-        <!-- END: Pagination -->
-    </div>
-    <!-- BEGIN: Delete Confirmation Modal -->
-    <div id="delete-confirmation-modal" class="modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body p-0">
-                    <div class="p-5 text-center">
-                        <i data-lucide="x-circle" class="w-16 h-16 text-danger mx-auto mt-3"></i>
-                        <div class="text-3xl mt-5">Are you sure?</div>
-                        <div class="text-slate-500 mt-2">
-                            Do you really want to delete these records?
-                            <br>
-                            This process cannot be undone.
+                    <div class="hidden md:block mx-auto text-slate-500"></div>
+                    <div class="w-full sm:w-auto mt-3 sm:mt-0 sm:ml-auto md:ml-0">
+                        <div class="w-56 relative text-slate-500">
+                            <label for="quick_search"></label>
+                            <input id="quick_search" type="text" class="form-control w-56 box pr-10" placeholder="Quick Search...">
+                            <i class="w-4 h-4 absolute my-auto inset-y-0 mr-3 right-0" data-lucide="search"></i>
                         </div>
                     </div>
-                    <div class="px-5 pb-8 text-center">
-                        <button type="button" data-tw-dismiss="modal" class="btn btn-outline-secondary w-24 mr-1">
-                            Cancel
-                        </button>
-                        <button type="button" class="btn btn-danger w-24">Delete</button>
-                    </div>
                 </div>
+                <div class="col-span-12" id="pochita_table_div"></div>
             </div>
         </div>
     </div>
-    <!-- END: Delete Confirmation Modal -->
 @endsection
 
 @push('css')
@@ -115,6 +39,198 @@
 
 @push('js')
     <script>
+        $(document).ready(function () {
+            fetch_data()
+            show_form("ADD")
+            // fetch_data
+            $(document).on('click', '.pagination a', function (event) {
+                event.preventDefault();
+                let page = $(this).attr('href').split('page=')[1];
+                let query = $('#quick_search').val();
+                $('#hidden_page').val(page);
+                $('li').removeClass('active');
+                $(this).parent().addClass('active');
+                fetch_data(page, query);
+            });
+            $(document).on('keyup', '#quick_search', delay(function () {
+                let query = $('#quick_search').val();
+                let page = $('#hidden_page').val(1);
+                fetch_data(page, query);
+            }, 500));
+            // show_form
+            $(document).on('click', '#pochita_add_button', function (event) {
+                event.preventDefault();
+                show_form("ADD")
+            });
+            $(document).on('click', '#pochita_filter_button', function (event) {
+                event.preventDefault();
+                show_form("SEARCH")
+            });
+            $(document).on('click', '#pochita_table #pochita_table_edit', function (event) {
+                event.preventDefault();
+                let currentRow = $(this).closest('tr');
+                let id = currentRow.find("td:eq(0)").text();
+                show_form("EDIT", id)
+            });
+            $(document).on('click', '#pochita_form #reset_form', function (event) {
+                event.preventDefault()
+                $('#pochita_form')[0].reset();
+            })
+            // action_form
+            $(document).on('submit', '#pochita_form', function (event) {
+                event.preventDefault()
+                let data = $(this).serializeArray();
+                let type = $('#type_form').val();
+                action_form(data, type)
+            })
+            $(document).on('click', '#pochita_table #pochita_table_delete', function (event) {
+                event.preventDefault();
+                let currentRow = $(this).closest('tr');
+                let id = currentRow.find("td:eq(0)").text();
+                let name = currentRow.find("td:eq(1) > a").text();
+                Swal.fire({
+                    title: 'Warning',
+                    text: 'Are you sure delete '+name+'?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let data = {
+                            "_token": "{{ csrf_token() }}",
+                            "id": id
+                        }
+                        action_form(data, "DELETE")
+                    }
+                })
+            });
+        });
 
+        function fetch_data(page, search) {
+            if (page === undefined) {
+                page = 1
+            }
+            $.ajax({
+                url: '{{ route('inventory.master.supplier.show_table') }}',
+                type: 'get',
+                data: "page=" + page + "&quick_search=" + search,
+                beforeSend: function () {
+                    run_waitMe($('#pochita_table_div'), 1, 'facebook');
+                },
+                success: function (data) {
+                    let table = $('#pochita_table_div')
+                    table.html(data);
+                    table.waitMe('hide');
+                }
+            });
+        }
+
+        function show_form(type, id) {
+            let title = ''
+            let button_title = ''
+            if (type === "SEARCH") {
+                title = 'Search Supplier'
+                button_title = 'Search'
+            }
+            if (type === "ADD") {
+                title = 'Add Supplier'
+                button_title = 'Save'
+            }
+            if (type === "EDIT") {
+                title = 'Edit Supplier'
+                button_title = 'Update'
+            }
+            $.ajax({
+                url: "{{ route('inventory.master.supplier.show_form') }}",
+                data: {
+                    'type': type,
+                    'title': title,
+                    'button_title': button_title,
+                    'id': id
+                },
+                beforeSend: function () {
+                    run_waitMe($('#pochita_form_div'), 1, 'facebook');
+                },
+                success: function (data) {
+                    let form = $('#pochita_form_div')
+                    form.html(data);
+                    $('#type_form').val(type);
+                    $('#id').val(id);
+                    form.waitMe('hide');
+                }
+            })
+        }
+
+        function action_form(data, type) {
+            let url = ''
+            let method = ''
+            if (type === "SEARCH") {
+                url = "{{ route('inventory.master.supplier.show_table') }}"
+                method = "GET"
+            }
+            if (type === "ADD") {
+                url = "{{ route('inventory.master.supplier.store') }}"
+                method = "POST"
+            }
+            if (type === "EDIT") {
+                url = "{{ route('inventory.master.supplier.update') }}"
+                method = "PUT"
+            }
+            if (type === "DELETE") {
+                url = "{{ route('inventory.master.supplier.delete') }}"
+                method = "DELETE"
+            }
+            $.ajax({
+                url: url,
+                type: method,
+                data: data,
+                beforeSend: function () {
+                    run_waitMe($('#table_data'), 1, 'facebook');
+                },
+                success: function (data) {
+                    if (type === "ADD") {
+                        $('#pochita_form')[0].reset();
+                    }
+                    let table = $('#pochita_table_div')
+                    table.html(data);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Action Executed !',
+                        showConfirmButton: true,
+                    })
+                    table.waitMe('hide');
+                },
+                error: function (e) {
+                    if ('errors' in e.responseJSON) {
+                        let error = "<ul class='text-left'>";
+                        $.each(e.responseJSON.errors, function (i, val) {
+                            $.each(val, function (i, val1) {
+                                error += '<li>' + val1 + '</li>'
+                            })
+                        })
+                        error += "</ul>";
+                        Swal.fire({
+                            icon: 'error',
+                            title: e.responseJSON.message,
+                            html: error,
+                            showConfirmButton: true,
+                        })
+                    } else if ('error' in e.responseJSON) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: e.responseJSON.error.message,
+                            showConfirmButton: true,
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: e.responseJSON.message,
+                            showConfirmButton: true,
+                        })
+                    }
+                    $('#pochita_form').waitMe('hide');
+                }
+            })
+        }
     </script>
 @endpush

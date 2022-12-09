@@ -2,10 +2,12 @@
 
 namespace Modules\Inventory\Http\Controllers;
 
+use Exception;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Inventory\Http\Models\InvItem;
 use Modules\Inventory\Http\Models\InvStock;
 
 class InvStockController extends Controller
@@ -17,16 +19,16 @@ class InvStockController extends Controller
      */
     public function index(Request $request): Renderable
     {
-        $perPage = 5;
+        $perPage = 1;
         $req = $request->all();
         unset($req['_token']);
         $data = InvStock::query();
         if (!empty($req['perPage'])){
             $perPage = $req['perPage'];
         }
-//        if (!empty($req['search'])){
-//            $data = $data->where('name', 'like', '%'.$req['search'].'%');
-//        }
+        if (!empty($req['search'])){
+            $data = $data->where('name', 'like', '%'.$req['search'].'%');
+        }
         $data = $data->paginate($perPage);
         return view('inventory::pages.master.stock.index', [
             'title' => 'Stock',
@@ -42,7 +44,11 @@ class InvStockController extends Controller
      */
     public function create(): Renderable
     {
-        return view('inventory::create');
+        $items = InvItem::all();
+        return view('inventory::pages.master.stock.form', [
+            'title' => 'Stock',
+            'items' => $items,
+        ]);
     }
 
     /**
@@ -52,7 +58,28 @@ class InvStockController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        return redirect()->back();
+        $request->validate([
+            'item_id' => 'required',
+            'quantity' => 'required',
+            'unit' => 'required',
+            'price' => 'required',
+            'type' => 'required'
+        ]);
+        $data = $request->all();
+        unset($data['_token']);
+        try {
+            InvStock::query()->create([
+                'item_id' => $data['item_id'],
+                'quantity' => $data['quantity'],
+                'unit' => $data['unit'],
+                'price' => $data['price'],
+                'type' => $data['type'],
+                'total' => $data['price'] * $data['quantity']
+            ]);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+        return redirect()->route('inventory.master.stock.index')->with('success', 'Data created successfully');
     }
 
     /**
@@ -72,7 +99,12 @@ class InvStockController extends Controller
      */
     public function edit(InvStock $invStock): Renderable
     {
-        return view('inventory::edit');
+        $items = InvItem::all();
+        return view('inventory::pages.master.stock.form', [
+            'item' => $invStock,
+            'title' => 'Stock',
+            'items' => $items,
+        ]);
     }
 
     /**
@@ -83,7 +115,28 @@ class InvStockController extends Controller
      */
     public function update(Request $request, InvStock $invStock): RedirectResponse
     {
-        return redirect()->back();
+        $request->validate([
+            'item_id' => 'required',
+            'quantity' => 'required',
+            'unit' => 'required',
+            'price' => 'required',
+            'type' => 'required'
+        ]);
+        $data = $request->all();
+        unset($data['_token']);
+        try {
+            $invStock->update([
+                'item_id' => $data['item_id'],
+                'quantity' => $data['quantity'],
+                'unit' => $data['unit'],
+                'price' => $data['price'],
+                'type' => $data['type'],
+                'total' => $data['price'] * $data['quantity']
+            ]);
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+        return redirect()->route('inventory.master.stock.index')->with('success', 'Data updated successfully');
     }
 
     /**
@@ -93,6 +146,12 @@ class InvStockController extends Controller
      */
     public function destroy(InvStock $invStock): RedirectResponse
     {
-        return redirect()->back();
+        try {
+            $invStock->delete();
+        } catch (Exception $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+
+        }
+        return back()->with(['success' => "data has been deleted"]);
     }
 }
