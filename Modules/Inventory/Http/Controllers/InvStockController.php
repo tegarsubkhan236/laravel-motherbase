@@ -3,8 +3,6 @@
 namespace Modules\Inventory\Http\Controllers;
 
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Modules\Inventory\Http\Models\InvItem;
@@ -12,51 +10,54 @@ use Modules\Inventory\Http\Models\InvStock;
 
 class InvStockController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function index(Request $request): Renderable
+    public function index()
     {
-        $perPage = 1;
-        $req = $request->all();
-        unset($req['_token']);
-        $data = InvStock::query();
-        if (!empty($req['perPage'])){
-            $perPage = $req['perPage'];
+        return view('inventory::pages.master.stock.index');
+    }
+
+    public function show_table()
+    {
+        $req = request()->all();
+        $data = InvStock::query()->orderBy('id', 'desc');
+        if (isset($req['type_form']) && $req['type_form'] == "FILTER") {
+            request()->validate([
+                'item_id' => 'required',
+                'date_range' => 'required',
+                'type' => 'nullable'
+            ]);
+            $data = $data->where('item_id', $req['item_id']);
         }
-        if (!empty($req['search'])){
-            $data = $data->where('name', 'like', '%'.$req['search'].'%');
-        }
-        $data = $data->paginate($perPage);
-        return view('inventory::pages.master.stock.index', [
-            'title' => 'Stock',
-            'addRoute' => 'inventory.master.stock.create',
-            'searchRoute' => 'inventory.master.stock.index',
+        $data = $data->get()->groupBy(function ($item) {
+            return $item->created_at;
+        });
+        return view('inventory::pages.master.stock.pochita_table', [
             'data' => $data,
-        ]);
+        ])->render();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create(): Renderable
+    public function show_form(Request $request): string
     {
-        $items = InvItem::all();
-        return view('inventory::pages.master.stock.form', [
-            'title' => 'Stock',
-            'items' => $items,
+        $request->validate([
+            'title' => 'required',
+            'button_title' => 'required',
+            'type' => 'required',
+            'id' => 'nullable'
         ]);
+        $item = '';
+        if (isset($request['id'])) {
+            $item = InvStock::query()->find($request['id']);
+        }
+        $items = InvItem::all();
+        return view('inventory::pages.master.stock.pochita_form', [
+            'title' => $request['title'],
+            'button_title' => $request['button_title'],
+            'type' => $request['type'],
+            'item' => $item,
+            'items' => $items,
+        ])->render();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return RedirectResponse
-     */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'item_id' => 'required',
@@ -77,43 +78,12 @@ class InvStockController extends Controller
                 'total' => $data['price'] * $data['quantity']
             ]);
         } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
         return redirect()->route('inventory.master.stock.index')->with('success', 'Data created successfully');
     }
 
-    /**
-     * Show the specified resource.
-     * @param InvStock $invStock
-     * @return Renderable
-     */
-    public function show(InvStock $invStock): Renderable
-    {
-        return view('inventory::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param InvStock $invStock
-     * @return Renderable
-     */
-    public function edit(InvStock $invStock): Renderable
-    {
-        $items = InvItem::all();
-        return view('inventory::pages.master.stock.form', [
-            'item' => $invStock,
-            'title' => 'Stock',
-            'items' => $items,
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param InvStock $invStock
-     * @return RedirectResponse
-     */
-    public function update(Request $request, InvStock $invStock): RedirectResponse
+    public function update(Request $request, InvStock $invStock)
     {
         $request->validate([
             'item_id' => 'required',
@@ -134,23 +104,17 @@ class InvStockController extends Controller
                 'total' => $data['price'] * $data['quantity']
             ]);
         } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
         return redirect()->route('inventory.master.stock.index')->with('success', 'Data updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     * @param InvStock $invStock
-     * @return RedirectResponse
-     */
-    public function destroy(InvStock $invStock): RedirectResponse
+    public function delete(InvStock $invStock)
     {
         try {
             $invStock->delete();
         } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
-
+            return response()->json(['error' => $e->getMessage()], 500);
         }
         return back()->with(['success' => "data has been deleted"]);
     }
