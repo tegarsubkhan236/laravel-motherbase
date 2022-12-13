@@ -54,7 +54,7 @@ class InvItemController extends Controller
         ])->render();
     }
 
-    public function store(Request $request)
+    public function adjusment(Request $request)
     {
         $request->validate([
             'name' => 'required|string',
@@ -75,7 +75,7 @@ class InvItemController extends Controller
             ]);
             return $this->show_table();
         } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -100,7 +100,7 @@ class InvItemController extends Controller
             ]);
             return $this->show_table();
         } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -110,7 +110,7 @@ class InvItemController extends Controller
             InvItem::query()->where('id', $request['id'])->delete();
             return $this->show_table();
         } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

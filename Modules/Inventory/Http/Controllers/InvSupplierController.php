@@ -72,14 +72,14 @@ class InvSupplierController extends Controller
         ])->render();
     }
 
-    public function store(Request $request): string
+    public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string',
             'cperson' => 'required',
             'address' => 'required',
             'contact' => 'required',
-            'status' => 'nullable'
+            'status' => 'required'
         ]);
         $data = $request->all();
         try {
@@ -88,11 +88,11 @@ class InvSupplierController extends Controller
                 'cperson' => strtoupper($data['cperson']),
                 'address' => strtoupper($data['address']),
                 'contact' => strtoupper($data['contact']),
-                'status' => SupplierStatus::ACTIVE,
+                'status' => $data['status'],
             ]);
             return $this->show_table();
         } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -104,7 +104,7 @@ class InvSupplierController extends Controller
             'cperson' => 'required',
             'address' => 'required',
             'contact' => 'required',
-            'status' => 'nullable'
+            'status' => 'required'
         ]);
         $data = $request->all();
         try {
@@ -113,21 +113,21 @@ class InvSupplierController extends Controller
                 'cperson' => strtoupper($data['cperson']),
                 'address' => strtoupper($data['address']),
                 'contact' => strtoupper($data['contact']),
-                'status' => isset($data['status']) && $data['status'] == 'on' ? SupplierStatus::ACTIVE : SupplierStatus::INACTIVE,
+                'status' => $data['status']
             ]);
             return $this->show_table();
         } catch (Exception $e) {
-            return $e->getMessage();
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    public function delete(Request $request): string
+    public function delete(Request $request)
     {
         try {
             InvSupplier::query()->where('id', $request['id'])->delete();
             return $this->show_table();
         } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 }

@@ -153,6 +153,7 @@
                 success: function (data) {
                     let form = $('#pochita_form_div')
                     form.html(data);
+                    new TomSelect("#supplier");
                     $('#type_form').val(type);
                     $('#id').val(id);
                     form.waitMe('hide');
@@ -187,8 +188,8 @@
                     run_waitMe($('#table_data'), 1, 'facebook');
                 },
                 success: function (data) {
-                    if (type === "ADD") {
-                        $('#pochita_form')[0].reset();
+                    if (type !== "SEARCH" && type !== "DELETE" ){
+                        show_form(type)
                     }
                     let table = $('#pochita_table_div')
                     table.html(data);
@@ -217,13 +218,14 @@
                     } else if ('error' in e.responseJSON) {
                         Swal.fire({
                             icon: 'error',
-                            title: e.responseJSON.error.message,
+                            title: e.statusText,
+                            html: e.responseJSON.error,
                             showConfirmButton: true,
                         })
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: e.responseJSON.message,
+                            title: 'Unhandle error',
                             showConfirmButton: true,
                         })
                     }

@@ -14,8 +14,8 @@ class AddForeignKeysToInvPoItemsTable extends Migration
     public function up()
     {
         Schema::table('inv_po_items', function (Blueprint $table) {
-            $table->foreign(['item_id'], 'inv_po_items_ibfk_2')->references(['id'])->on('inv_items')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['po_id'], 'inv_po_items_ibfk_1')->references(['id'])->on('inv_po')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['item_id'], 'inv_po_items_ibfk_2')->references(['id'])->on('inv_items')->onUpdate('CASCADE')->onDelete('RESTRICT');
+            $table->foreign(['po_id'], 'inv_po_items_ibfk_1')->references(['id'])->on('inv_po')->onUpdate('CASCADE')->onDelete('RESTRICT');
         });
     }
 

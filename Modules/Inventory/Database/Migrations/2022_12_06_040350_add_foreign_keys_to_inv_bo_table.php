@@ -14,9 +14,9 @@ class AddForeignKeysToInvBoTable extends Migration
     public function up()
     {
         Schema::table('inv_bo', function (Blueprint $table) {
-            $table->foreign(['po_id'], 'inv_bo_ibfk_2')->references(['id'])->on('inv_po')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['supplier_id'], 'inv_bo_ibfk_1')->references(['id'])->on('inv_suppliers')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['receiving_id'], 'inv_bo_ibfk_3')->references(['id'])->on('inv_receivings')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['po_id'], 'inv_bo_ibfk_2')->references(['id'])->on('inv_po')->onUpdate('CASCADE')->onDelete('RESTRICT');
+            $table->foreign(['supplier_id'], 'inv_bo_ibfk_1')->references(['id'])->on('inv_suppliers')->onUpdate('CASCADE')->onDelete('RESTRICT');
+            $table->foreign(['receiving_id'], 'inv_bo_ibfk_3')->references(['id'])->on('inv_receivings')->onUpdate('CASCADE')->onDelete('RESTRICT');
         });
     }
 

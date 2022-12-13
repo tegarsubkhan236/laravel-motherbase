@@ -34,7 +34,7 @@
             <input type="text" name="id" id="id" hidden>
         </label>
         <div class="mt-3">
-            <label for="supplier" class="whitespace-nowrap">Supplier</label>
+            <label for="supplier">Supplier</label>
             <select name="supplier" id="supplier" class="form-control tom-select">
                 <option value="">-- Select Supplier --</option>
                 @foreach($supplier as $x)
