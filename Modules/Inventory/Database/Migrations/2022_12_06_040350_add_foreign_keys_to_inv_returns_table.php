@@ -14,7 +14,7 @@ class AddForeignKeysToInvReturnsTable extends Migration
     public function up()
     {
         Schema::table('inv_returns', function (Blueprint $table) {
-            $table->foreign(['supplier_id'], 'inv_returns_ibfk_1')->references(['id'])->on('inv_suppliers')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['supplier_id'], 'inv_returns_ibfk_1')->references(['id'])->on('inv_suppliers')->onUpdate('CASCADE')->onDelete('RESTRICT');
         });
     }
 

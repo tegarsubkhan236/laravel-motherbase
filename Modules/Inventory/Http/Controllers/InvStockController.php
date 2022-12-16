@@ -3,155 +3,90 @@
 namespace Modules\Inventory\Http\Controllers;
 
 use Exception;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Inventory\Casts\StockType;
 use Modules\Inventory\Http\Models\InvItem;
 use Modules\Inventory\Http\Models\InvStock;
 
 class InvStockController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function index(Request $request): Renderable
+    public function index()
     {
-        $perPage = 1;
-        $req = $request->all();
-        unset($req['_token']);
-        $data = InvStock::query();
-        if (!empty($req['perPage'])){
-            $perPage = $req['perPage'];
+        return view('inventory::pages.master.stock.index');
+    }
+
+    public function show_table(): string
+    {
+        $req = request()->all();
+        $data = InvStock::query()->orderBy('id', 'desc');
+        if (isset($req['type_form']) && $req['type_form'] == "FILTER") {
+            request()->validate([
+                'item_id' => 'required',
+                'date_range' => 'required',
+                'type' => 'nullable'
+            ]);
+            $data = $data->where('item_id', $req['item_id']);
         }
-        if (!empty($req['search'])){
-            $data = $data->where('name', 'like', '%'.$req['search'].'%');
-        }
-        $data = $data->paginate($perPage);
-        return view('inventory::pages.master.stock.index', [
-            'title' => 'Stock',
-            'addRoute' => 'inventory.master.stock.create',
-            'searchRoute' => 'inventory.master.stock.index',
+        $data = $data->get()->groupBy(function ($item) {
+            return $item->created_at;
+        });
+        return view('inventory::pages.master.stock.pochita_table', [
             'data' => $data,
-        ]);
+        ])->render();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create(): Renderable
-    {
-        $items = InvItem::all();
-        return view('inventory::pages.master.stock.form', [
-            'title' => 'Stock',
-            'items' => $items,
-        ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return RedirectResponse
-     */
-    public function store(Request $request): RedirectResponse
+    public function show_form(Request $request): string
     {
         $request->validate([
+            'title' => 'required',
+            'button_title' => 'required',
+            'type' => 'required',
+            'id' => 'nullable'
+        ]);
+        $item = '';
+        if (isset($request['id'])) {
+            $item = InvStock::query()->find($request['id']);
+        }
+        $items = InvItem::all();
+        return view('inventory::pages.master.stock.pochita_form', [
+            'title' => $request['title'],
+            'button_title' => $request['button_title'],
+            'type' => $request['type'],
+            'item' => $item,
+            'items' => $items,
+        ])->render();
+    }
+
+    public function adjusment(Request $request)
+    {
+        $request->validate([
+            'type_form' => 'required',
             'item_id' => 'required',
             'quantity' => 'required',
-            'unit' => 'required',
-            'price' => 'required',
-            'type' => 'required'
+            'type' => 'required|in:3,4',
         ]);
         $data = $request->all();
         unset($data['_token']);
         try {
+            $latest_stock = InvStock::query()->latest('id')->first();
+            if ($data['type'] == StockType::ADJUSMENT_PLUS && $latest_stock['quantity'] + $data['quantity'] < 0){
+
+            }
+            if ($data['type'] == StockType::ADJUSMENT_MIN && $latest_stock['quantity'] - $data['quantity'] > 0){
+
+            }
             InvStock::query()->create([
                 'item_id' => $data['item_id'],
                 'quantity' => $data['quantity'],
-                'unit' => $data['unit'],
-                'price' => $data['price'],
-                'type' => $data['type'],
-                'total' => $data['price'] * $data['quantity']
+                'unit' => $latest_stock['unit'],
+                'price' => $latest_stock['price'],
+                'type' => StockType::lang($data['type']),
+                'total' => $data['type'] == StockType::ADJUSMENT_PLUS ? $latest_stock['quantity'] + $data['quantity'] : $latest_stock['quantity'] - $data['quantity']
             ]);
+            return redirect()->route('inventory.master.stock.index')->with('success', 'Data created successfully');
         } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        return redirect()->route('inventory.master.stock.index')->with('success', 'Data created successfully');
-    }
-
-    /**
-     * Show the specified resource.
-     * @param InvStock $invStock
-     * @return Renderable
-     */
-    public function show(InvStock $invStock): Renderable
-    {
-        return view('inventory::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param InvStock $invStock
-     * @return Renderable
-     */
-    public function edit(InvStock $invStock): Renderable
-    {
-        $items = InvItem::all();
-        return view('inventory::pages.master.stock.form', [
-            'item' => $invStock,
-            'title' => 'Stock',
-            'items' => $items,
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param InvStock $invStock
-     * @return RedirectResponse
-     */
-    public function update(Request $request, InvStock $invStock): RedirectResponse
-    {
-        $request->validate([
-            'item_id' => 'required',
-            'quantity' => 'required',
-            'unit' => 'required',
-            'price' => 'required',
-            'type' => 'required'
-        ]);
-        $data = $request->all();
-        unset($data['_token']);
-        try {
-            $invStock->update([
-                'item_id' => $data['item_id'],
-                'quantity' => $data['quantity'],
-                'unit' => $data['unit'],
-                'price' => $data['price'],
-                'type' => $data['type'],
-                'total' => $data['price'] * $data['quantity']
-            ]);
-        } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
-        }
-        return redirect()->route('inventory.master.stock.index')->with('success', 'Data updated successfully');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param InvStock $invStock
-     * @return RedirectResponse
-     */
-    public function destroy(InvStock $invStock): RedirectResponse
-    {
-        try {
-            $invStock->delete();
-        } catch (Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
-
-        }
-        return back()->with(['success' => "data has been deleted"]);
     }
 }

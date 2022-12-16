@@ -21,21 +21,17 @@ Route::prefix('inventory')->name('inventory.')->group(function () {
         });
         Route::prefix('item')->name('item.')->group(function () {
             Route::get('/', [InvItemController::class, 'index'])->name('index');
-            Route::get('/create', [InvItemController::class, 'create'])->name('create');
+            Route::get('/show_form', [InvItemController::class, 'show_form'])->name('show_form');
+            Route::get('/show_table', [InvItemController::class, 'show_table'])->name('show_table');
             Route::post('/store', [InvItemController::class, 'store'])->name('store');
-            Route::get('/{inv_item}/detail', [InvItemController::class, 'show'])->name('detail');
-            Route::get('/{inv_item}/edit', [InvItemController::class, 'edit'])->name('edit');
-            Route::put('/{inv_item}/update', [InvItemController::class, 'update'])->name('update');
-            Route::delete('/{inv_item}/delete', [InvItemController::class, 'delete'])->name('delete');
+            Route::put('/update', [InvItemController::class, 'update'])->name('update');
+            Route::delete('/delete', [InvItemController::class, 'delete'])->name('delete');
         });
         Route::prefix('stock')->name('stock.')->group(function () {
             Route::get('/', [InvStockController::class, 'index'])->name('index');
-            Route::get('/create', [InvStockController::class, 'create'])->name('create');
-            Route::post('/store', [InvStockController::class, 'store'])->name('store');
-            Route::get('/{inv_stock}/detail', [InvStockController::class, 'show'])->name('detail');
-            Route::get('/{inv_stock}/edit', [InvStockController::class, 'edit'])->name('edit');
-            Route::put('/{inv_stock}/update', [InvStockController::class, 'update'])->name('update');
-            Route::delete('/{inv_stock}/delete', [InvStockController::class, 'delete'])->name('delete');
+            Route::get('/show_form', [InvStockController::class, 'show_form'])->name('show_form');
+            Route::get('/show_table', [InvStockController::class, 'show_table'])->name('show_table');
+            Route::post('/adjusment', [InvStockController::class, 'adjusment'])->name('adjusment');
         });
     });
     Route::prefix('po')->name('po.')->group(function () {

@@ -9,6 +9,7 @@
     <!-- BEGIN: CSS Assets-->
     <link rel="stylesheet" href="{{ asset('dashboardAsset/dist/css/app.css') }}"/>
     <link rel="stylesheet" href="{{ asset('plugins/waitme/waitMe.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
     @stack('css')
     <!-- END: CSS Assets-->
 </head>
@@ -40,6 +41,7 @@
 <script type="text/javascript" src="{{ asset('plugins/jquery-3.6.1.js') }}"></script>
 <script type="text/javascript" src="{{ asset('plugins/waitme/waitMe.js') }}"></script>
 <script type="text/javascript" src="{{ asset('plugins/sweetalert2.all.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 <script>
     function run_waitMe(el, num, effect) {
         let text = 'Please wait...';

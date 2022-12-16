@@ -1,5 +1,6 @@
-@php use Modules\Inventory\Casts\SupplierStatus; @endphp
+@php use Modules\Inventory\Casts\ItemStatus @endphp
 <form action="#" method="post" id="pochita_form">
+    @csrf
     <div class="intro-y box p-5">
         <h2 class="intro-y text-lg font-medium text-center">
             {{ $title }}
@@ -33,44 +34,37 @@
             <input type="text" name="id" id="id" hidden>
         </label>
         <div class="mt-3">
-            <label for="name" class="form-label">Supplier</label>
-            <div class="input-group">
-                <input name="name" id="name" type="text" value="{{ !empty($item->name) ? $item->name : '' }}"
-                       class="form-control" placeholder="Name">
-            </div>
+            <label for="supplier">Supplier</label>
+            <select name="supplier" id="supplier" class="form-control tom-select">
+                <option value="">-- Select Supplier --</option>
+                @foreach($supplier as $x)
+                    <option value="{{ $x->id }}" {{ !empty($item) && in_array($x->toArray(), $item->inv_supplier->toArray()) ? 'selected' : '' }}>{{ $x->name }}</option>
+                @endforeach
+            </select>
         </div>
         <div class="mt-3">
-            <label for="cperson" class="form-label">Contact Person</label>
-            <div class="input-group">
-                <input name="cperson" id="cperson" type="text" value="{{ !empty($item) ? $item->cperson : '' }}"
-                       class="form-control" placeholder="Contact Person">
-            </div>
+            <label for="name" class="whitespace-nowrap">Item</label>
+            <input name="name" id="name" type="text" value="{{ !empty($item) ? $item->name : '' }}" class="form-control" placeholder="Item">
         </div>
         <div class="mt-3">
-            <label for="address" class="form-label">Address</label>
-            <div class="input-group">
-                <input name="address" id="address" type="text" value="{{ !empty($item) ? $item->address : '' }}"
-                       class="form-control" placeholder="Address">
-            </div>
+            <label for="description" class="whitespace-nowrap">Description</label>
+            <textarea name="description" id="description" cols="10" rows="5" class="form-control" placeholder="Description">{!! !empty($item) ? $item->description : '' !!}</textarea>
         </div>
         <div class="mt-3">
-            <label for="contact" class="form-label">Phone</label>
-            <div class="input-group">
-                <input name="contact" id="contact" type="text" value="{{ !empty($item) ? $item->contact : '' }}"
-                       class="form-control" placeholder="Contact">
-            </div>
+            <label for="cost" class="whitespace-nowrap">Cost</label>
+            <input name="cost" id="cost" type="number" value="{{ !empty($item) ? $item->cost : '' }}" class="form-control" placeholder="Cost">
         </div>
         <div class="mt-3">
             <label for="status">Active Status</label>
             <div class="form-check mt-2">
                 <input id="status-1" class="form-check-input" type="radio" name="status"
-                       value="{{ SupplierStatus::ACTIVE }}" {{ !empty($item) && $item->status == SupplierStatus::ACTIVE ? 'checked' : '' }}>
-                <label class="form-check-label" for="status-1">{{ SupplierStatus::lang(1) }}</label>
+                       value="{{ ItemStatus::ACTIVE }}" {{ !empty($item) && $item->status == ItemStatus::ACTIVE ? 'checked' : '' }}>
+                <label class="form-check-label" for="status-1">{{ ItemStatus::lang(1) }}</label>
             </div>
             <div class="form-check mt-2">
                 <input id="status-0" class="form-check-input" type="radio" name="status"
-                       value="{{ SupplierStatus::INACTIVE }}" {{ !empty($item) && $item->status == SupplierStatus::INACTIVE ? 'checked' : '' }}>
-                <label class="form-check-label" for="status-0">{{ SupplierStatus::lang(0) }}</label>
+                       value="{{ ItemStatus::INACTIVE }}" {{ !empty($item) && $item->status == ItemStatus::INACTIVE ? 'checked' : '' }}>
+                <label class="form-check-label" for="status-0">{{ ItemStatus::lang(0) }}</label>
             </div>
         </div>
         <div class="text-right mt-5">

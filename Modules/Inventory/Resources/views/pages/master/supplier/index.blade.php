@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    @include('vendor.alert.basic')
     <div class="grid grid-cols-12 gap-6 mt-5">
         <div class="col-span-12 xl:col-span-3" id="pochita_form_div"></div>
         <div class="col-span-12 xl:col-span-9">
@@ -164,6 +163,7 @@
         function action_form(data, type) {
             let url = ''
             let method = ''
+            let table = $('#pochita_table_div')
             if (type === "SEARCH") {
                 url = "{{ route('inventory.master.supplier.show_table') }}"
                 method = "GET"
@@ -188,10 +188,9 @@
                     run_waitMe($('#table_data'), 1, 'facebook');
                 },
                 success: function (data) {
-                    if (type === "ADD") {
-                        $('#pochita_form')[0].reset();
+                    if (type !== "SEARCH" && type !== "DELETE" ){
+                        show_form(type)
                     }
-                    let table = $('#pochita_table_div')
                     table.html(data);
                     Swal.fire({
                         icon: 'success',
@@ -218,13 +217,14 @@
                     } else if ('error' in e.responseJSON) {
                         Swal.fire({
                             icon: 'error',
-                            title: e.responseJSON.error.message,
+                            title: e.statusText,
+                            html: e.responseJSON.error,
                             showConfirmButton: true,
                         })
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: e.responseJSON.message,
+                            title: 'Unhandle error',
                             showConfirmButton: true,
                         })
                     }
