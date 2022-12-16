@@ -5,6 +5,7 @@ namespace Modules\Inventory\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Casts\SupplierStatus;
 use Modules\Inventory\Http\Models\InvSupplier;
 
@@ -82,6 +83,7 @@ class InvSupplierController extends Controller
             'status' => 'required'
         ]);
         $data = $request->all();
+        DB::beginTransaction();
         try {
             InvSupplier::query()->create([
                 'name' => strtoupper($data['name']),
@@ -90,8 +92,10 @@ class InvSupplierController extends Controller
                 'contact' => strtoupper($data['contact']),
                 'status' => $data['status'],
             ]);
+            DB::commit();
             return $this->show_table();
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -107,6 +111,7 @@ class InvSupplierController extends Controller
             'status' => 'required'
         ]);
         $data = $request->all();
+        DB::beginTransaction();
         try {
             InvSupplier::query()->where('id', $data['id'])->update([
                 'name' => strtoupper($data['name']),
@@ -115,18 +120,23 @@ class InvSupplierController extends Controller
                 'contact' => strtoupper($data['contact']),
                 'status' => $data['status']
             ]);
+            DB::commit();
             return $this->show_table();
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
     public function delete(Request $request)
     {
+        DB::beginTransaction();
         try {
             InvSupplier::query()->where('id', $request['id'])->delete();
+            DB::commit();
             return $this->show_table();
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }

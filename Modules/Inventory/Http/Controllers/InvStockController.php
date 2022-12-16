@@ -5,6 +5,7 @@ namespace Modules\Inventory\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Casts\StockType;
 use Modules\Inventory\Http\Models\InvItem;
 use Modules\Inventory\Http\Models\InvStock;
@@ -19,21 +20,27 @@ class InvStockController extends Controller
     public function show_table(): string
     {
         $req = request()->all();
-        $data = InvStock::query()->orderBy('id', 'desc');
+        $data = InvStock::query();
         if (isset($req['type_form']) && $req['type_form'] == "FILTER") {
             request()->validate([
-                'item_id' => 'required',
-                'date_range' => 'required',
-                'type' => 'nullable'
+                'item_id' => 'required'
             ]);
             $data = $data->where('item_id', $req['item_id']);
+            if (isset($req['date_range'])){
+                $data = $data->where('created_at', $req['date_range']);
+            }
+            if (isset($req['type'])){
+                $data = $data->where('type', $req['type']);
+            }
+            return $data->orderBy('id', 'desc')->get()->groupBy(function ($item) {
+                return $item->created_at;
+            });
+            return $data;
+            return view('inventory::pages.master.stock.pochita_table', [
+                'data' => $data,
+            ])->render();
         }
-        $data = $data->get()->groupBy(function ($item) {
-            return $item->created_at;
-        });
-        return view('inventory::pages.master.stock.pochita_table', [
-            'data' => $data,
-        ])->render();
+        return response()->json(['error' => 'Filter data empty'], 500);
     }
 
     public function show_form(Request $request): string
@@ -68,24 +75,30 @@ class InvStockController extends Controller
         ]);
         $data = $request->all();
         unset($data['_token']);
+        DB::beginTransaction();
         try {
             $latest_stock = InvStock::query()->latest('id')->first();
-            if ($data['type'] == StockType::ADJUSMENT_PLUS && $latest_stock['quantity'] + $data['quantity'] < 0){
-
+            if (!$latest_stock){
+                return response()->json(['error' => "Item not available"], 500);
+            }
+            if ($data['type'] == StockType::ADJUSMENT_PLUS && $latest_stock['quantity'] + $data['quantity'] > 0){
+                $data['total'] = $latest_stock['quantity'] + $data['quantity'];
             }
             if ($data['type'] == StockType::ADJUSMENT_MIN && $latest_stock['quantity'] - $data['quantity'] > 0){
-
+                $data['total'] = $latest_stock['quantity'] - $data['quantity'];
             }
             InvStock::query()->create([
                 'item_id' => $data['item_id'],
                 'quantity' => $data['quantity'],
                 'unit' => $latest_stock['unit'],
                 'price' => $latest_stock['price'],
-                'type' => StockType::lang($data['type']),
-                'total' => $data['type'] == StockType::ADJUSMENT_PLUS ? $latest_stock['quantity'] + $data['quantity'] : $latest_stock['quantity'] - $data['quantity']
+                'type' => $data['type'],
+                'total' => $data['total']
             ]);
-            return redirect()->route('inventory.master.stock.index')->with('success', 'Data created successfully');
+            DB::commit();
+            return $this->show_table();
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
