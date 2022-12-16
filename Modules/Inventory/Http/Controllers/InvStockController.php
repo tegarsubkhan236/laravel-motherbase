@@ -70,19 +70,19 @@ class InvStockController extends Controller
         unset($data['_token']);
         try {
             $latest_stock = InvStock::query()->latest('id')->first();
-            if ($data['type'] == StockType::ADJUSMENT_PLUS && $latest_stock['quantity'] + $data['quantity'] < 0){
-
+            if ($data['type'] == StockType::ADJUSMENT_PLUS && $latest_stock['quantity'] + $data['quantity'] > 0){
+                $data['total'] = $latest_stock['quantity'] + $data['quantity'];
             }
             if ($data['type'] == StockType::ADJUSMENT_MIN && $latest_stock['quantity'] - $data['quantity'] > 0){
-
+                $data['total'] = $latest_stock['quantity'] - $data['quantity'];
             }
             InvStock::query()->create([
                 'item_id' => $data['item_id'],
                 'quantity' => $data['quantity'],
                 'unit' => $latest_stock['unit'],
                 'price' => $latest_stock['price'],
-                'type' => StockType::lang($data['type']),
-                'total' => $data['type'] == StockType::ADJUSMENT_PLUS ? $latest_stock['quantity'] + $data['quantity'] : $latest_stock['quantity'] - $data['quantity']
+                'type' => $data['type'],
+                'total' => $data['total'] ?? 0
             ]);
             return redirect()->route('inventory.master.stock.index')->with('success', 'Data created successfully');
         } catch (Exception $e) {
