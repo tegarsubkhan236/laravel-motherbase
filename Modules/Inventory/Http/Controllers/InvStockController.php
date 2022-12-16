@@ -5,6 +5,7 @@ namespace Modules\Inventory\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Inventory\Casts\StockType;
 use Modules\Inventory\Http\Models\InvItem;
 use Modules\Inventory\Http\Models\InvStock;
 
@@ -15,7 +16,7 @@ class InvStockController extends Controller
         return view('inventory::pages.master.stock.index');
     }
 
-    public function show_table()
+    public function show_table(): string
     {
         $req = request()->all();
         $data = InvStock::query()->orderBy('id', 'desc');
@@ -57,65 +58,35 @@ class InvStockController extends Controller
         ])->render();
     }
 
-    public function store(Request $request)
+    public function adjusment(Request $request)
     {
         $request->validate([
+            'type_form' => 'required',
             'item_id' => 'required',
             'quantity' => 'required',
-            'unit' => 'required',
-            'price' => 'required',
-            'type' => 'required'
+            'type' => 'required|in:3,4',
         ]);
         $data = $request->all();
         unset($data['_token']);
         try {
+            $latest_stock = InvStock::query()->latest('id')->first();
+            if ($data['type'] == StockType::ADJUSMENT_PLUS && $latest_stock['quantity'] + $data['quantity'] < 0){
+
+            }
+            if ($data['type'] == StockType::ADJUSMENT_MIN && $latest_stock['quantity'] - $data['quantity'] > 0){
+
+            }
             InvStock::query()->create([
                 'item_id' => $data['item_id'],
                 'quantity' => $data['quantity'],
-                'unit' => $data['unit'],
-                'price' => $data['price'],
-                'type' => $data['type'],
-                'total' => $data['price'] * $data['quantity']
+                'unit' => $latest_stock['unit'],
+                'price' => $latest_stock['price'],
+                'type' => StockType::lang($data['type']),
+                'total' => $data['type'] == StockType::ADJUSMENT_PLUS ? $latest_stock['quantity'] + $data['quantity'] : $latest_stock['quantity'] - $data['quantity']
             ]);
+            return redirect()->route('inventory.master.stock.index')->with('success', 'Data created successfully');
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-        return redirect()->route('inventory.master.stock.index')->with('success', 'Data created successfully');
-    }
-
-    public function update(Request $request, InvStock $invStock)
-    {
-        $request->validate([
-            'item_id' => 'required',
-            'quantity' => 'required',
-            'unit' => 'required',
-            'price' => 'required',
-            'type' => 'required'
-        ]);
-        $data = $request->all();
-        unset($data['_token']);
-        try {
-            $invStock->update([
-                'item_id' => $data['item_id'],
-                'quantity' => $data['quantity'],
-                'unit' => $data['unit'],
-                'price' => $data['price'],
-                'type' => $data['type'],
-                'total' => $data['price'] * $data['quantity']
-            ]);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-        return redirect()->route('inventory.master.stock.index')->with('success', 'Data updated successfully');
-    }
-
-    public function delete(InvStock $invStock)
-    {
-        try {
-            $invStock->delete();
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-        return back()->with(['success' => "data has been deleted"]);
     }
 }

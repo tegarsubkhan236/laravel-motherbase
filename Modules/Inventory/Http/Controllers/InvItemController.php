@@ -54,7 +54,7 @@ class InvItemController extends Controller
         ])->render();
     }
 
-    public function adjusment(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string',
