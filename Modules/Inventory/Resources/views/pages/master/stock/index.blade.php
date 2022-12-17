@@ -42,8 +42,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script>
         $(document).ready(function () {
-            fetch_data()
             show_form("FILTER")
+            fetch_data()
             // show_form
             $(document).on('click', '#pochita_add_button', function (event) {
                 event.preventDefault();

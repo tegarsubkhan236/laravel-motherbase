@@ -12,16 +12,17 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class InvItem
- * 
+ *
  * @property int $id
  * @property int $supplier_id
  * @property string $name
+ * @property string $unit
  * @property string $description
  * @property int $cost
  * @property int $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property InvSupplier $inv_supplier
  * @property InvBoItem $inv_bo_item
  * @property InvPoItem $inv_po_item
@@ -42,6 +43,7 @@ class InvItem extends Model
 	protected $fillable = [
 		'supplier_id',
 		'name',
+		'unit',
 		'description',
 		'cost',
 		'status'
