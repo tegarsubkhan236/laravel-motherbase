@@ -1,6 +1,5 @@
 @php use Modules\Inventory\Casts\StockType @endphp
 <form action="#" method="post" id="pochita_form">
-    @csrf
     <div class="intro-y box p-5">
         <h2 class="intro-y text-lg font-medium text-center">
             {{ $title }}

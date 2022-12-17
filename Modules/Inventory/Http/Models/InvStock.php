@@ -6,6 +6,7 @@
 
 namespace Modules\Inventory\Http\Models;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property int $id
  * @property int $item_id
+ * @property int $user_id
  * @property int $quantity
  * @property string $unit
  * @property float $price
@@ -22,6 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property Carbon|null $created_at
  *
  * @property InvItem $inv_item
+ * @property User $user
  *
  * @package Modules\Inventory\Http\Models
  */
@@ -32,6 +35,7 @@ class InvStock extends Model
 
     protected $casts = [
         'item_id' => 'int',
+        'user_id' => 'int',
         'quantity' => 'int',
         'price' => 'float',
         'total' => 'float',
@@ -40,6 +44,7 @@ class InvStock extends Model
 
     protected $fillable = [
         'item_id',
+        'user_id',
         'quantity',
         'unit',
         'price',
@@ -54,6 +59,11 @@ class InvStock extends Model
         static::creating(function ($model) {
             $model->created_at = $model->freshTimestamp();
         });
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function inv_item()

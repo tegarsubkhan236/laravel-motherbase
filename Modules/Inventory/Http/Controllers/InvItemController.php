@@ -5,6 +5,7 @@ namespace Modules\Inventory\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Inventory\Casts\StockType;
 use Modules\Inventory\Http\Models\InvItem;
@@ -102,6 +103,7 @@ class InvItemController extends Controller
             ]);
             InvStock::query()->create([
                 'item_id' => $item['id'],
+                'user_id' => Auth::id(),
                 'quantity' => 0,
                 'unit' => $data['unit'],
                 'price' => $data['cost'],

@@ -173,6 +173,7 @@
                     table.waitMe('hide');
                 },
                 error: function (e) {
+                    console.log(e)
                     if ('errors' in e.responseJSON) {
                         let error = "<ul class='text-left'>";
                         $.each(e.responseJSON.errors, function (i, val) {
