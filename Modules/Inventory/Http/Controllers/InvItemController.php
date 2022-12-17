@@ -19,6 +19,23 @@ class InvItemController extends Controller
         return view('inventory::pages.master.item.index');
     }
 
+    public function show_table(): string
+    {
+        $req = request()->all();
+        $data = InvItem::query()->orderBy('id','desc');
+        if (isset($req['quick_search']) && $req['quick_search'] != 'undefined'){
+            $data = $data->where('name', 'like', '%'.$req['quick_search'].'%');
+        }
+        if (isset($req['type_form']) && $req['type_form'] == "SEARCH"){
+            return view('inventory::pages.master.item.pochita_table', [
+                'data' => $data->paginate(100),
+            ])->render();
+        }
+        return view('inventory::pages.master.item.pochita_table', [
+            'data' => $data->paginate(5),
+        ])->render();
+    }
+
     public function show_form(Request $request): string
     {
         $request->validate([

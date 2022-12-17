@@ -159,7 +159,6 @@
                     run_waitMe($('#table_data'), 1, 'facebook');
                 },
                 success: function (data) {
-                    console.log(data)
                     if (type !== "FILTER"){
                         show_form(type)
                     }
@@ -173,7 +172,6 @@
                     table.waitMe('hide');
                 },
                 error: function (e) {
-                    console.log(e)
                     if ('errors' in e.responseJSON) {
                         let error = "<ul class='text-left'>";
                         $.each(e.responseJSON.errors, function (i, val) {

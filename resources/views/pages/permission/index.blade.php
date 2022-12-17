@@ -27,73 +27,83 @@
         </div>
         <!-- BEGIN: Data List -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-            <table class="table table-report -mt-2">
-                <thead>
-                <tr>
-                    <th class="text-center whitespace-nowrap">#</th>
-                    <th class="whitespace-nowrap">PERMISSION</th>
-                    <th class="whitespace-nowrap">SUB PERMISSION</th>
-                </tr>
-                </thead>
-                <tbody>
+            <div class="accordion accordion-boxed box">
                 @foreach($data as $key => $item)
-                    <tr class="intro-x">
-                        <td class="text-center">{{ $key+1 }}</td>
-                        <td colspan="2">
-                            <span class="bg-primary text-white text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-darkmode-800 dark:text-white">
-                                {{$item->name}}
-                            </span>
-                        </td>
-                        <td class="table-report__action w-56">
-                            <div class="flex justify-center items-center">
-                                @can('ms_edit_permission')
-                                <a class="tooltip flex items-center text-warning mr-3" title="Edit {{ $title }}"
-                                   href="{{ route('user_management.permission.edit', [$item->id]) }}">
-                                    <i data-lucide="check-square" class="w-4 h-4 mr-1"></i>
-                                </a>
-                                @endcan
-                                @can('ms_delete_permission')
-                                <a class="tooltip flex items-center text-danger" title="Delete {{ $title }}" href="#"
-                               data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal">
-                                    <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
-                                </a>
-                                @endcan
+                    <div class="accordion-item" id="pochita_accordion_item_{{ $item->id }}">
+                        <div id="pochita_accordion_content_{{ $item->id }}" class="accordion-header">
+                            <button class="accordion-button" type="button" data-tw-toggle="collapse"
+                                    data-tw-target="#pochita_accordion_collapse_{{ $item->id }}"
+                                    aria-expanded="true" id="pochita_accordion_item_button_{{ $item->id }}"
+                                    aria-controls="pochita_accordion_collapse_{{ $item->id }}">
+                                <label>
+                                    <input name="permission[]" class="form-check-input checkAll_{{ $item->id }}"
+                                           type="checkbox" id="pochita_accordion_item_checkbox_{{ $item->id }}"
+                                           value="{{ $item->id }}" {{ !empty($role) && in_array($item->id, $role->permissions->pluck('id')->toArray()) ? 'checked' : '' }}>
+                                </label>
+                                {{ $item->name }}
+                                <div class="flex float-right">
+                                    @can('ms_edit_permission')
+                                        <a class="tooltip flex items-center text-warning mr-3" title="Edit {{ $title }}"
+                                           href="{{ route('user_management.permission.edit', [$item->id]) }}">
+                                            <i data-lucide="check-square" class="w-4 h-4 mr-1"></i>
+                                        </a>
+                                    @endcan
+                                    @can('ms_delete_permission')
+                                        <a class="tooltip flex items-center text-danger" title="Delete {{ $title }}" href="#"
+                                           data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal">
+                                            <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
+                                        </a>
+                                    @endcan
+                                </div>
+                            </button>
+                        </div>
+                        <div id="pochita_accordion_collapse_{{ $item->id }}"
+                             class="accordion-collapse collapse show"
+                             aria-labelledby="pochita_accordion_content_{{ $item->id }}"
+                             data-tw-parent="#pochita_accordion">
+                            <div class="accordion-body text-slate-600 dark:text-slate-500 leading-relaxed">
+                                @if($item->children->count() > 0)
+                                    <table class="table" id="pochita_accordion_table">
+                                        <tbody id="pochita_accordion_table_body">
+                                        @foreach($item->children as $child)
+                                            <tr>
+                                                <td>
+                                                    <input name="permission[]"
+                                                           id="permission_{{ $child->id }}"
+                                                           class="form-check-input checkboxes_{{ $item->id }} checkboxes-child-{{ $item->id }}"
+                                                           type="checkbox" value="{{ $child->id }}" {{ !empty($role) && in_array($child->id, $role->permissions->pluck('id')->toArray()) ? 'checked' : '' }}>
+                                                    <label for="permission_{{ $child->id }}">
+                                                                                <span class="bg-success text-white text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-darkmode-800 dark:text-white">
+                                                                                    {{$child->name}}
+                                                                                </span>
+                                                    </label>
+                                                </td>
+                                                <td class="table-report__action w-56">
+                                                    <div class="flex justify-center items-center">
+                                                        @can('ms_edit_permission')
+                                                            <a class="tooltip flex items-center text-warning mr-3" title="Edit {{ $title }}"
+                                                               href="{{ route('user_management.permission.edit', [$item->id]) }}">
+                                                                <i data-lucide="check-square" class="w-4 h-4 mr-1"></i>
+                                                            </a>
+                                                        @endcan
+                                                        @can('ms_delete_permission')
+                                                            <a class="tooltip flex items-center text-danger" title="Delete {{ $title }}" href="#"
+                                                               data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal">
+                                                                <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
+                                                            </a>
+                                                        @endcan
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                @endif
                             </div>
-                        </td>
-                    </tr>
-                    @if($item->children->count() > 0)
-                        @foreach($item->children as $child)
-                            <tr class="intro-x">
-                                <td></td>
-                                <td></td>
-                                <td>
-                                    <span
-                                        class="bg-success text-white text-sm font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-darkmode-800 dark:text-white">
-                                        {{$child->name}}
-                                    </span>
-                                </td>
-                                <td class="table-report__action w-56">
-                                    <div class="flex justify-center items-center">
-                                        @can('ms_edit_permission')
-                                            <a class="tooltip flex items-center text-warning mr-3" title="Edit {{ $title }}"
-                                               href="{{ route('user_management.permission.edit', [$child->id]) }}">
-                                                <i data-lucide="check-square" class="w-4 h-4 mr-1"></i>
-                                            </a>
-                                        @endcan
-                                        @can('ms_delete_permission')
-                                            <a class="tooltip flex items-center text-danger" title="Delete {{ $title }}" href="#"
-                                               data-tw-toggle="modal" data-tw-target="#delete-confirmation-modal">
-                                                <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
-                                            </a>
-                                        @endcan
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endif
+                        </div>
+                    </div>
                 @endforeach
-                </tbody>
-            </table>
+            </div>
         </div>
         <!-- END: Data List -->
         <!-- BEGIN: Pagination -->
@@ -102,31 +112,6 @@
         </div>
         <!-- END: Pagination -->
     </div>
-    <!-- BEGIN: Delete Confirmation Modal -->
-    <div id="delete-confirmation-modal" class="modal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-body p-0">
-                    <div class="p-5 text-center">
-                        <i data-lucide="x-circle" class="w-16 h-16 text-danger mx-auto mt-3"></i>
-                        <div class="text-3xl mt-5">Are you sure?</div>
-                        <div class="text-slate-500 mt-2">
-                            Do you really want to delete these records?
-                            <br>
-                            This process cannot be undone.
-                        </div>
-                    </div>
-                    <div class="px-5 pb-8 text-center">
-                        <button type="button" data-tw-dismiss="modal" class="btn btn-outline-secondary w-24 mr-1">
-                            Cancel
-                        </button>
-                        <button type="button" class="btn btn-danger w-24">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- END: Delete Confirmation Modal -->
 @endsection
 
 @push('css')
@@ -134,7 +119,25 @@
 @endpush
 
 @push('js')
-    <script>
-
+    <script type="text/javascript">
+        window.data = @php echo json_encode( $data ) @endphp;
+        $(document).ready(function (){
+            $.each(window.data['data'], function (index, item) {
+                $('.checkAll_'+item.id).on('click', function () {
+                    if (this.checked) {
+                        $(".checkboxes_"+item.id).prop("checked", true);
+                    } else {
+                        $(".checkboxes_"+item.id).prop("checked", false);
+                    }
+                });
+                $(".checkboxes_"+item.id).on('click', function () {
+                    if ($(".checkboxes_"+item.id).length === $('.checkboxes_'+item.id+':checked').length) {
+                        $(".checkAll_"+item.id).prop("checked", true);
+                    } else {
+                        $(".checkAll_"+item.id).prop("checked", false);
+                    }
+                });
+            })
+        })
     </script>
 @endpush

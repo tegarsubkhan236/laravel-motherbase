@@ -49,6 +49,7 @@
         <div class="mt-3">
             <label for="unit" class="whitespace-nowrap">Item Unit</label>
             <input name="unit" id="unit" type="text" value="{{ !empty($item) ? $item->unit : '' }}" class="form-control" placeholder="Item Unit">
+
         </div>
         <div class="mt-3">
             <label for="description" class="whitespace-nowrap">Description</label>
