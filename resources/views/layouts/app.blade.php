@@ -9,6 +9,7 @@
     <!-- BEGIN: CSS Assets-->
     <link rel="stylesheet" href="{{ asset('dashboardAsset/dist/css/app.css') }}"/>
     <link rel="stylesheet" href="{{ asset('plugins/waitme/waitMe.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     @stack('css')
     <!-- END: CSS Assets-->
 </head>
@@ -40,6 +41,7 @@
 <script type="text/javascript" src="{{ asset('plugins/jquery-3.6.1.js') }}"></script>
 <script type="text/javascript" src="{{ asset('plugins/waitme/waitMe.js') }}"></script>
 <script type="text/javascript" src="{{ asset('plugins/sweetalert2.all.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     function run_waitMe(el, num, effect) {
         let text = 'Please wait...';
@@ -71,6 +73,10 @@
             }, ms || 0);
         };
     }
+
+    $(document).on('select2:open', () => {
+        document.querySelector('.select2-search__field').focus();
+    });
 </script>
 @stack('js')
 <!-- END: JS Assets-->

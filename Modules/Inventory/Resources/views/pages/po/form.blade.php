@@ -177,12 +177,7 @@
     </div>
 @endsection
 
-@push('css')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-@endpush
-
 @push('js')
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         window.ItemBySupplier = {
             SupplierDetail: null,
@@ -309,7 +304,7 @@
                         <td class="row-index !pr-2">${rowIdx}</td>
                         <td class="!px-2 w-72">
                             <label for="item_id"></label>
-                            <select name="item_id[]" id="item_id" class="form-control">
+                            <select name="item_id[]" id="item_id" class="form-control select2_${rowIdx}">
                                 <option value="">-- Select Item --</option>
                                 ${item}
                             </select>
@@ -339,6 +334,7 @@
                         </td>
                     </tr>
                 `)
+                $('.select2_'+rowIdx).select2()
             })
 
             pochita_item_table_body.ready(function () {
@@ -358,6 +354,8 @@
                         price_element.val(filter_item[0]['cost'])
                     }
                     if (item_id !== ''){
+                        // $("#item_id option[value='"+item_id+"']").hide();
+                        // $("#item_id option[value!='"+item_id+"']").show();
                         window.ItemBySupplier.Items = window.ItemBySupplier.Items.filter(v => v.id !== parseFloat(item_id))
                     }
                 });

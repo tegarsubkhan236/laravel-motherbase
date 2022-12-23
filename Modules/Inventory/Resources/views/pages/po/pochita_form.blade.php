@@ -54,7 +54,7 @@
         @endif
         <div class="mt-3">
             <label for="supplier_id">Supplier</label>
-            <select name="supplier_id" id="supplier_id" class="form-control tom-select">
+            <select name="supplier_id" id="supplier_id" class="form-control">
                 <option value="">-- Select Supplier --</option>
                 @foreach($supplier as $x)
                     <option value="{{ $x->id }}" {{ !empty($item) && in_array($x->toArray(), $item->inv_supplier->toArray()) ? 'selected' : '' }}>{{ $x->name }}</option>
