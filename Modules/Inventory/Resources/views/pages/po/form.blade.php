@@ -358,6 +358,7 @@
                         // $("#item_id option[value!='"+item_id+"']").show();
                         window.ItemBySupplier.Items = window.ItemBySupplier.Items.filter(v => v.id !== parseFloat(item_id))
                     }
+                    child.find('#item_id').prop('disabled','disabled')
                 });
 
                 $(this).on('keyup', '#qty', delay(function () {

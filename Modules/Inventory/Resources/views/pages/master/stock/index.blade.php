@@ -91,7 +91,7 @@
                 success: function (data) {
                     let form = $('#pochita_form_div')
                     form.html(data).ready(function () {
-                        new TomSelect("#item_id");
+                        $('#item_id').select2();
                         let start = moment().subtract(29, 'days');
                         let end = moment();
 

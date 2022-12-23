@@ -153,7 +153,7 @@
                 success: function (data) {
                     let form = $('#pochita_form_div')
                     form.html(data);
-                    new TomSelect("#supplier");
+                    $('#supplier').select2();
                     $('#type_form').val(type);
                     $('#id').val(id);
                     form.waitMe('hide');
