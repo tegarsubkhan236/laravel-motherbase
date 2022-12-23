@@ -2,78 +2,83 @@
 
 namespace Modules\Inventory\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Inventory\Http\Models\InvItem;
+use Modules\Inventory\Http\Models\InvPo;
+use Modules\Inventory\Http\Models\InvSupplier;
 
 class InvPoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
     public function index()
     {
         return view('inventory::pages.po.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
+    public function show_table(): string
+    {
+        $req = request()->all();
+        $data = InvPo::query()->orderBy('id','desc');
+        if (isset($req['quick_search']) && $req['quick_search'] != 'undefined'){
+            $data = $data->where('po_code', 'like', '%'.$req['po_code'].'%');
+        }
+        if (isset($req['type_form']) && $req['type_form'] == "SEARCH"){
+            return view('inventory::pages.po.pochita_table', [
+                'data' => $data->paginate(100),
+            ])->render();
+        }
+        return view('inventory::pages.po.pochita_table', [
+            'data' => $data->paginate(5),
+        ])->render();
+    }
+
+    public function show_form(Request $request): string
+    {
+        $request->validate([
+            'title' => 'required',
+            'button_title' => 'required',
+            'type' => 'required',
+            'id' => 'nullable'
+        ]);
+        $item = '';
+        if (isset($request['id'])){
+            $item = InvPo::query()->find($request['id']);
+        }
+        $supplier = InvSupplier::all();
+        return view('inventory::pages.po.pochita_form', [
+            'title' => $request['title'],
+            'button_title' => $request['button_title'],
+            'type' => $request['type'],
+            'item' => $item,
+            'supplier' => $supplier,
+        ])->render();
+    }
+
     public function create()
     {
-        return view('inventory::create');
+        $supplier = InvSupplier::all();
+        $items = InvItem::all();
+        return view('inventory::pages.po.form',[
+            'title' => 'New Purchase Order',
+            'button_title' => 'Save',
+            'supplier' => $supplier,
+            'items' => $items,
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
     public function store(Request $request)
     {
-        //
+        return $request->all();
     }
 
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
+    public function edit(InvPo $invPo)
     {
-        return view('inventory::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('inventory::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
+        $supplier = InvSupplier::all();
+        return view('inventory::pages.po.form',[
+            'title' => 'New Purchase Order',
+            'button_title' => 'Save',
+            'supplier' => $supplier,
+            'item' => $invPo
+        ]);
     }
 }

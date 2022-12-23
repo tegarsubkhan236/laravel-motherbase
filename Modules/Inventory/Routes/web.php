@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Inventory\Http\Controllers\InvBoController;
+use Modules\Inventory\Http\Controllers\InvGlobalController;
 use Modules\Inventory\Http\Controllers\InvItemController;
 use Modules\Inventory\Http\Controllers\InvPoController;
 use Modules\Inventory\Http\Controllers\InvReceiveController;
@@ -36,12 +37,13 @@ Route::prefix('inventory')->name('inventory.')->group(function () {
     });
     Route::prefix('po')->name('po.')->group(function () {
         Route::get('/', [InvPoController::class, 'index'])->name('index');
+        Route::get('/show_form', [InvPoController::class, 'show_form'])->name('show_form');
+        Route::get('/show_table', [InvPoController::class, 'show_table'])->name('show_table');
         Route::get('/create', [InvPoController::class, 'create'])->name('create');
-        Route::post('/store', [InvPoController::class, 'store'])->name('store');
-        Route::get('/{inv_po}/detail', [InvPoController::class, 'show'])->name('detail');
         Route::get('/{inv_po}/edit', [InvPoController::class, 'edit'])->name('edit');
-        Route::put('/{inv_po}/update', [InvPoController::class, 'update'])->name('update');
-        Route::delete('/{inv_po}/delete', [InvPoController::class, 'delete'])->name('delete');
+        Route::post('/store', [InvPoController::class, 'store'])->name('store');
+        Route::put('/update', [InvPoController::class, 'update'])->name('update');
+        Route::delete('/delete', [InvPoController::class, 'delete'])->name('delete');
     });
     Route::prefix('bo')->name('bo.')->group(function () {
         Route::get('/', [InvBoController::class, 'index'])->name('index');
@@ -69,5 +71,9 @@ Route::prefix('inventory')->name('inventory.')->group(function () {
         Route::get('/{inv_sales}/edit', [InvSalesController::class, 'edit'])->name('edit');
         Route::put('/{inv_sales}/update', [InvSalesController::class, 'update'])->name('update');
         Route::delete('/{inv_sales}/delete', [InvSalesController::class, 'delete'])->name('delete');
+    });
+    /* Ajax Request */
+    Route::prefix('global')->name('global.')->group(function () {
+        Route::get('/get_item_by_supplier_id', [InvGlobalController::class, 'get_item_by_supplier_id'])->name('get_item_by_supplier_id');
     });
 });
