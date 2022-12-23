@@ -146,16 +146,16 @@
                                             </div>
                                             <div class="text-center sm:text-right sm:ml-auto">
                                                 <div class="text-base text-slate-500 whitespace-nowrap" id="sub_total_show">Rp. 0</div>
-                                                <input type="number" name="sub_total" id="sub_total" value="" hidden>
+                                                <input type="hidden" name="sub_total" id="sub_total">
 
                                                 <div class="text-base text-slate-500 whitespace-nowrap" id="total_discount_show">Rp. 0</div>
-                                                <input type="number" name="sub_total" id="total_discount" value="" hidden>
+                                                <input type="hidden" name="total_discount" id="total_discount">
 
                                                 <div class="text-base text-slate-500 whitespace-nowrap" id="total_tax_show">Rp. 0</div>
-                                                <input type="number" name="sub_total" id="total_tax" value="" hidden>
+                                                <input type="hidden" name="total_tax" id="total_tax">
 
                                                 <div class="text-xl text-primary font-medium mt-2" id="grand_total_show">Rp. 0</div>
-                                                <input type="number" name="sub_total" id="grand_total" value="" hidden>
+                                                <input type="hidden" name="grand_total" id="grand_total">
                                             </div>
                                         </div>
                                     </th>
@@ -303,11 +303,12 @@
                      <tr id="R${++rowIdx}">
                         <td class="row-index !pr-2">${rowIdx}</td>
                         <td class="!px-2 w-72">
-                            <label for="item_id"></label>
-                            <select name="item_id[]" id="item_id" class="form-control select2_${rowIdx}">
+                            <label for="item_id_select"></label>
+                            <select name="item_id_select[]" id="item_id_select" class="form-control select2_${rowIdx}">
                                 <option value="">-- Select Item --</option>
                                 ${item}
                             </select>
+                            <input type="hidden" name="item_id[]" id="item_id">
                         </td>
                         <td class="!px-2">
                             <div class="input-group">
@@ -338,12 +339,12 @@
             })
 
             pochita_item_table_body.ready(function () {
-                $(this).on('change', '#item_id', function () {
+                $(this).on('change', '#item_id_select', function () {
                     let child = $(this).closest('tr')
-                    let item_id = child.find('#item_id').val()
+                    let item_id_select = child.find('#item_id_select').val()
                     let price_element = child.find('#price')
                     let unit_element = child.find('#unit')
-                    let filter_item = window.ItemBySupplier.Items.filter(v => v.id === parseFloat(item_id))
+                    let filter_item = window.ItemBySupplier.Items.filter(v => v.id === parseInt(item_id_select))
                     child.find('#total').val(0)
                     child.find('#qty').val(0)
                     if (filter_item.length === 0) {
@@ -353,12 +354,13 @@
                         unit_element.html(filter_item[0]['unit'])
                         price_element.val(filter_item[0]['cost'])
                     }
-                    if (item_id !== ''){
-                        // $("#item_id option[value='"+item_id+"']").hide();
-                        // $("#item_id option[value!='"+item_id+"']").show();
-                        window.ItemBySupplier.Items = window.ItemBySupplier.Items.filter(v => v.id !== parseFloat(item_id))
+                    if (item_id_select !== ''){
+                        // $("#item_id_select option[value='"+item_id_select+"']").hide();
+                        // $("#item_id_select option[value!='"+item_id_select+"']").show();
+                        window.ItemBySupplier.Items = window.ItemBySupplier.Items.filter(v => v.id !== parseInt(item_id_select))
                     }
-                    child.find('#item_id').prop('disabled','disabled')
+                    child.find('#item_id').val(item_id_select)
+                    child.find('#item_id_select').prop('disabled','disabled')
                 });
 
                 $(this).on('keyup', '#qty', delay(function () {
@@ -452,7 +454,7 @@
                 child.find('#total').val(0)
                 return 0
             } else {
-                let total = parseFloat(qty_element) * parseFloat(price_element)
+                let total = parseInt(qty_element) * parseInt(price_element)
                 child.find('#total').val(formatRupiah(total))
                 return total
             }
@@ -475,10 +477,10 @@
             let nominal = $('input[name="discount_nominal"]')
             let percentage = $('input[name="discount_percentage"]')
             if (radio_button_checked.val() === 'discount_nominal') {
-                disc = parseFloat(nominal.val())
+                disc = parseInt(nominal.val())
             }
             if (radio_button_checked.val() === 'discount_percentage') {
-                disc = (parseFloat(percentage.val()) / 100) * sub_total()
+                disc = (parseInt(percentage.val()) / 100) * sub_total()
             }
             $('#total_discount').val(disc)
             $('#total_discount_show').text('Rp. ' + formatRupiah(disc))
@@ -491,10 +493,10 @@
             let nominal = $('input[name="tax_nominal"]')
             let percentage = $('input[name="tax_percentage"]')
             if (radio_button_checked.val() === 'tax_nominal') {
-                tax = parseFloat(nominal.val())
+                tax = parseInt(nominal.val())
             }
             if (radio_button_checked.val() === 'tax_percentage') {
-                tax = (sub_total() - disc()) * (parseFloat(percentage.val()) / 100)
+                tax = (sub_total() - disc()) * (parseInt(percentage.val()) / 100)
             }
             $('#total_tax').val(tax)
             $('#total_tax_show').text('Rp. ' + formatRupiah(tax))
