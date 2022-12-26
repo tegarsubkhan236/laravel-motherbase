@@ -2,78 +2,59 @@
 
 namespace Modules\Inventory\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Modules\Inventory\Casts\ReceiveFromOrder;
+use Modules\Inventory\Http\Models\InvPo;
+use Modules\Inventory\Http\Models\InvReceiving;
 
 class InvReceiveController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
-     */
     public function index()
     {
         return view('inventory::pages.receive.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @return Renderable
-     */
-    public function create()
+    public function show_table(): string
     {
-        return view('inventory::create');
+        $req = request()->all();
+        if (isset($req['type_form']) && $req['type_form'] == "SEARCH"){
+            \request()->validate([
+                'date_range' => 'required',
+                'from_order' => 'required'
+            ]);
+            $data = '';
+            if ($req['from_order'] == ReceiveFromOrder::PO){
+                $data = InvPo::query();
+            }
+            if ($req['from_order'] == ReceiveFromOrder::BO){
+                $data = InvPo::query();
+            }
+            if (isset($req['date_range'])) {
+                $date_exploded = explode(' - ',$req['date_range']);
+                $from = date('Y-m-d', strtotime($date_exploded[0]));
+                $to = date('Y-m-d', strtotime($date_exploded[1]));
+                $data = $data->whereBetween('created_at', [$from, $to]);
+            }
+            return response()->json(['data' => $data->get()]);
+//            return view('inventory::pages.receive.pochita_table', [
+//                'data' => $data->paginate(5),
+//            ])->render();
+        }
+        return view('inventory::pages.receive.pochita_table')->render();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Renderable
-     */
-    public function store(Request $request)
+    public function show_form(Request $request): string
     {
-        //
-    }
-
-    /**
-     * Show the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function show($id)
-    {
-        return view('inventory::show');
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('inventory::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
-    public function destroy($id)
-    {
-        //
+        $request->validate([
+            'title' => 'required',
+            'button_title' => 'required',
+            'type' => 'required',
+        ]);
+        return view('inventory::pages.receive.pochita_form', [
+            'title' => $request['title'],
+            'button_title' => $request['button_title'],
+            'type' => $request['type'],
+        ])->render();
     }
 }

@@ -9,7 +9,7 @@
                     <div>
                         <button type="button" class="btn btn-outline-primary dark:text-white" id="pochita_add_button">
                             <i class="w-6 h-6 mr-2" data-lucide="plus-circle"></i>
-                            New Data
+                            New Purchase Order
                         </button>
                         <button type="button" class="btn btn-outline-primary dark:text-white" id="pochita_filter_button">
                             <i class="w-6 h-6 mr-2" data-lucide="search"></i>
@@ -73,16 +73,12 @@
                 let id = currentRow.find("td:eq(0)").text();
                 show_form("EDIT", id)
             });
-            $(document).on('click', '#pochita_form #reset_form', function (event) {
-                event.preventDefault()
-                $('#pochita_form')[0].reset();
-            })
             // action_form
             $(document).on('submit', '#pochita_form', function (event) {
                 event.preventDefault()
                 let data = $(this).serializeArray();
                 let type = $('#type_form').val();
-                // action_form(data, type)
+                action_form(data, type)
             })
         });
 
@@ -107,7 +103,7 @@
 
         function show_form(type, id) {
             if (type === "SEARCH") {
-                let title = 'Search Purchase Order'
+                let title = 'Filter Purchase Order'
                 let button_title = 'Search'
                 $.ajax({
                     url: "{{ route('inventory.po.show_form') }}",
@@ -124,6 +120,7 @@
                         let form = $('#pochita_form_div')
                         form.html(data).ready(function () {
                             $("#supplier_id").select2()
+                            // $("#supplier_id").addClass('form-control')
                             let start = moment().subtract(29, 'days');
                             let end = moment();
 
@@ -158,6 +155,66 @@
             if (type === "EDIT") {
                 window.location.href = "/inventory/po/"+id+"/edit"
             }
+        }
+
+        function action_form(data, type) {
+            let url = ''
+            let method = ''
+            if (type === "SEARCH") {
+                url = "{{ route('inventory.po.show_table') }}"
+                method = "GET"
+            }
+            $.ajax({
+                url: url,
+                type: method,
+                data: data,
+                beforeSend: function () {
+                    run_waitMe($('#table_data'), 1, 'facebook');
+                },
+                success: function (data) {
+                    if (type !== "SEARCH"){
+                        show_form(type)
+                    }
+                    let table = $('#pochita_table_div')
+                    table.html(data);
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Data Filter has been executed successfully'
+                    })
+                    table.waitMe('hide');
+                },
+                error: function (e) {
+                    if ('errors' in e.responseJSON) {
+                        let error = "<ul class='text-left'>";
+                        $.each(e.responseJSON.errors, function (i, val) {
+                            $.each(val, function (i, val1) {
+                                error += '<li>' + val1 + '</li>'
+                            })
+                        })
+                        error += "</ul>";
+                        Swal.fire({
+                            icon: 'error',
+                            title: e.responseJSON.message,
+                            html: error,
+                            showConfirmButton: true,
+                        })
+                    } else if ('error' in e.responseJSON) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: e.statusText,
+                            html: e.responseJSON.error,
+                            showConfirmButton: true,
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Unhandle error',
+                            showConfirmButton: true,
+                        })
+                    }
+                    $('#pochita_form').waitMe('hide');
+                }
+            })
         }
     </script>
 @endpush

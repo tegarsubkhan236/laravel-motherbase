@@ -12,6 +12,7 @@ use Modules\Inventory\Http\Models\InvItem;
 use Modules\Inventory\Http\Models\InvPo;
 use Modules\Inventory\Http\Models\InvPoItem;
 use Modules\Inventory\Http\Models\InvSupplier;
+use function PHPUnit\Framework\isEmpty;
 
 class InvPoController extends Controller
 {
@@ -28,8 +29,25 @@ class InvPoController extends Controller
             $data = $data->where('po_code', 'like', '%'.$req['po_code'].'%');
         }
         if (isset($req['type_form']) && $req['type_form'] == "SEARCH"){
+            \request()->validate([
+                'po_code' => 'nullable',
+                'supplier_id' => 'nullable',
+                'date_range' => 'required'
+            ]);
+            if (isset($req['po_code'])) {
+                $data = $data->where('po_code', $req['po_code']);
+            }
+            if (isset($req['supplier_id'])) {
+                $data = $data->where('supplier_id', $req['supplier_id']);
+            }
+            if (isset($req['date_range'])) {
+                $date_exploded = explode(' - ',$req['date_range']);
+                $from = date('Y-m-d', strtotime($date_exploded[0]));
+                $to = date('Y-m-d', strtotime($date_exploded[1]));
+                $data = $data->whereBetween('created_at', [$from, $to]);
+            }
             return view('inventory::pages.po.pochita_table', [
-                'data' => $data->paginate(100),
+                'data' => $data->paginate(5),
             ])->render();
         }
         return view('inventory::pages.po.pochita_table', [
@@ -43,18 +61,12 @@ class InvPoController extends Controller
             'title' => 'required',
             'button_title' => 'required',
             'type' => 'required',
-            'id' => 'nullable'
         ]);
-        $item = '';
-        if (isset($request['id'])){
-            $item = InvPo::query()->find($request['id']);
-        }
         $supplier = InvSupplier::all();
-        return view('inventory::pages.po.pochita_form', [
+        return view('inventory::pages.po.form_filter', [
             'title' => $request['title'],
             'button_title' => $request['button_title'],
             'type' => $request['type'],
-            'item' => $item,
             'supplier' => $supplier,
         ])->render();
     }
@@ -63,7 +75,7 @@ class InvPoController extends Controller
     {
         $supplier = InvSupplier::all();
         $items = InvItem::all();
-        return view('inventory::pages.po.form',[
+        return view('inventory::pages.po.form_add',[
             'title' => 'New Purchase Order',
             'button_title' => 'Save',
             'supplier' => $supplier,
@@ -105,8 +117,19 @@ class InvPoController extends Controller
                 $foo = $data['tax_nominal'] / ($data['sub_total'] - $data['discount_nominal']) * 100;
                 $data['tax_percentage'] = number_format((float)$foo, 2, '.', '');
             }
+
+            $curr_date = now()->toDateString();
+            $replased = str_replace('-', '', $curr_date);
+
+            $latest = InvPo::query()->where('created_at', $curr_date);
+            if ($latest->count() == 0) {
+                $last_id = "001";
+            } else {
+                $last_id = sprintf("%03d", $latest->count() + 1);
+            }
+
             $create_po = InvPo::query()->create([
-                'po_code' => 'QWERTY',
+                'po_code' => "PO-".$last_id."-".$replased,
                 'supplier_id' => $data['supplier_id'],
                 'amount' => $data['sub_total'],
                 'discount' => $data['discount_nominal'],
@@ -114,7 +137,7 @@ class InvPoController extends Controller
                 'tax' => $data['tax_nominal'],
                 'tax_perc' => $data['tax_percentage'],
                 'remarks' => $data['remarks'],
-                'status' => PoStatus::ACTIVE
+                'status' => PoStatus::CREATED
             ]);
             if ($create_po){
                 $create_item_po = [];

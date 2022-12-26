@@ -28,7 +28,7 @@
                             </div>
                             <div class="mt-3">
                                 <label for="supplier_id">Supplier</label>
-                                <select name="supplier_id" id="supplier_id" class="form-control tom-select">
+                                <select id="supplier_id" name="supplier_id" class="form-control tom-select">
                                     <option value="">-- Select Supplier --</option>
                                     @foreach($supplier as $x)
                                         <option value="{{ $x->id }}">{{ $x->name }}</option>
@@ -169,7 +169,7 @@
                         <button type="button" class="btn btn-outline-secondary w-24 mr-1" id="pochita_reset_form">
                             Reset
                         </button>
-                        <button type="submit" class="btn btn-primary w-24">{{ $button_title }}</button>
+                        <button type="submit" class="btn btn-primary w-24" id="pochita_submit_form">{{ $button_title }}</button>
                     </div>
                 </div>
             </form>
@@ -184,7 +184,6 @@
             Items: {}
         }
         let rowIdx = 0;
-
         $(document).ready(function () {
             let supplier_id = $('#supplier_id'),
                 selector_tax_nominal = $('#tax_nominal_input'),
@@ -409,6 +408,19 @@
                     },
                     success: function (data) {
                         console.log(data)
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Created !',
+                            text: 'Purchase Order has been created with code '+ data.po_code,
+                            showConfirmButton: true,
+                        })
+                        $('#pochita_submit_form').prop('disabled', true)
+                        $('#pochita_reset_form').prop('disabled', true)
+                        $('.items').css('opacity','0.4').css('pointer-event','none')
+                        $('.ts-dropdown').remove();
+                        $('#pochita_form').find("input,textarea,select").prop("disabled", true);
+                        $("#pochita_item_table").find("input,button,textarea,select").prop("disabled", true);
+                        $('#pochita_add_row').remove()
                         pochita_form.waitMe('hide');
                     },
                     error: function (e) {

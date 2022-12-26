@@ -40,10 +40,7 @@ Route::prefix('inventory')->name('inventory.')->group(function () {
         Route::get('/show_form', [InvPoController::class, 'show_form'])->name('show_form');
         Route::get('/show_table', [InvPoController::class, 'show_table'])->name('show_table');
         Route::get('/create', [InvPoController::class, 'create'])->name('create');
-        Route::get('/{inv_po}/edit', [InvPoController::class, 'edit'])->name('edit');
         Route::post('/store', [InvPoController::class, 'store'])->name('store');
-        Route::put('/update', [InvPoController::class, 'update'])->name('update');
-        Route::delete('/delete', [InvPoController::class, 'delete'])->name('delete');
     });
     Route::prefix('bo')->name('bo.')->group(function () {
         Route::get('/', [InvBoController::class, 'index'])->name('index');
@@ -56,12 +53,10 @@ Route::prefix('inventory')->name('inventory.')->group(function () {
     });
     Route::prefix('receive')->name('receive.')->group(function () {
         Route::get('/', [InvReceiveController::class, 'index'])->name('index');
+        Route::get('/show_form', [InvReceiveController::class, 'show_form'])->name('show_form');
+        Route::get('/show_table', [InvReceiveController::class, 'show_table'])->name('show_table');
         Route::get('/create', [InvReceiveController::class, 'create'])->name('create');
         Route::post('/store', [InvReceiveController::class, 'store'])->name('store');
-        Route::get('/{inv_receive}/detail', [InvReceiveController::class, 'show'])->name('detail');
-        Route::get('/{inv_receive}/edit', [InvReceiveController::class, 'edit'])->name('edit');
-        Route::put('/{inv_receive}/update', [InvReceiveController::class, 'update'])->name('update');
-        Route::delete('/{inv_receive}/delete', [InvReceiveController::class, 'delete'])->name('delete');
     });
     Route::prefix('sales')->name('sales.')->group(function () {
         Route::get('/', [InvSalesController::class, 'index'])->name('index');
