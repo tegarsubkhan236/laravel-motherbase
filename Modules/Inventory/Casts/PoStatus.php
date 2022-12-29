@@ -4,8 +4,8 @@ namespace Modules\Inventory\Casts;
 class PoStatus
 {
     public const CREATED = 1;
-    public const FULL_RECEVIVE = 1;
-    public const PARTIAL_RECEIVE = 1;
+    public const FULL_RECEIVE = 2;
+    public const PARTIAL_RECEIVE = 3;
     public const FAILED = 0;
 
     public static function lang($status): string
@@ -13,8 +13,8 @@ class PoStatus
         switch ($status){
             case self::CREATED :
                 return "CREATED";
-            case self::FULL_RECEVIVE :
-                return "FULL_RECEVIVE";
+            case self::FULL_RECEIVE :
+                return "FULL_RECEIVE";
             case self::PARTIAL_RECEIVE :
                 return "PARTIAL_RECEIVE";
             case self::FAILED :
@@ -29,7 +29,7 @@ class PoStatus
         switch ($status){
             case self::CREATED :
                 return "CR";
-            case self::FULL_RECEVIVE :
+            case self::FULL_RECEIVE :
                 return "FR";
             case self::PARTIAL_RECEIVE :
                 return "PR";

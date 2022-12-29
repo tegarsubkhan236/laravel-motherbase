@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class InvPo
- * 
+ *
  * @property int $id
  * @property int $supplier_id
  * @property string $po_code
@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $status
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property InvSupplier $inv_supplier
  * @property Collection|InvBo[] $inv_bos
  * @property InvPoItem $inv_po_item
@@ -70,6 +70,6 @@ class InvPo extends Model
 
 	public function inv_po_item()
 	{
-		return $this->hasOne(InvPoItem::class, 'po_id');
+		return $this->hasMany(InvPoItem::class, 'po_id');
 	}
 }

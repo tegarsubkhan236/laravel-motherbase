@@ -1,11 +1,19 @@
 <nav class="side-nav">
     <ul>
-        <li>
+        <li class="test_li">
             <a href="{{ route('home') }}"
                class="side-menu {{ url()->current() == route('home') ? 'side-menu--active' : ''}}">
                 <div class="side-menu__icon"><i data-lucide="home"></i></div>
                 <div class="side-menu__title">
                     Dashboard
+                </div>
+            </a>
+        </li>
+        <li class="test_li">
+            <a href="#" class="side-menu test_a">
+                <div class="side-menu__icon"><i data-lucide="home"></i></div>
+                <div class="side-menu__title">
+                    Test
                 </div>
             </a>
         </li>

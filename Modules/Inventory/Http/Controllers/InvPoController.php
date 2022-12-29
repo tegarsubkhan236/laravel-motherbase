@@ -12,7 +12,6 @@ use Modules\Inventory\Http\Models\InvItem;
 use Modules\Inventory\Http\Models\InvPo;
 use Modules\Inventory\Http\Models\InvPoItem;
 use Modules\Inventory\Http\Models\InvSupplier;
-use function PHPUnit\Framework\isEmpty;
 
 class InvPoController extends Controller
 {
@@ -160,14 +159,20 @@ class InvPoController extends Controller
         }
     }
 
-    public function edit(InvPo $invPo)
+    public function edit($id)
     {
         $supplier = InvSupplier::all();
-        return view('inventory::pages.po.form',[
-            'title' => 'New Purchase Order',
-            'button_title' => 'Save',
+        $item = InvPo::with('inv_supplier','inv_po_item','inv_po_item.inv_item')->where('id', $id)->first();
+        return view('inventory::pages.po.form_edit',[
+            'title' => 'Edit Purchase Order',
+            'button_title' => 'Update',
             'supplier' => $supplier,
-            'item' => $invPo
+            'item' => $item
         ]);
+    }
+
+    public function update(Request $request, $id): JsonResponse
+    {
+        return response()->json($request->all());
     }
 }

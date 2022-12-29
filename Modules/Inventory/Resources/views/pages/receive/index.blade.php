@@ -37,10 +37,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script>
         $(document).ready(function () {
-            fetch_data()
-
             show_form("SEARCH")
-            // fetch_data
+
             $(document).on('click', '.pagination a', function (event) {
                 event.preventDefault();
                 let page = $(this).attr('href').split('page=')[1];
@@ -48,46 +46,46 @@
                 $('#hidden_page').val(page);
                 $('li').removeClass('active');
                 $(this).parent().addClass('active');
-                fetch_data(page, query);
+
+                let data = $("#pochita_form").serializeArray();
+                data[data.length] = { name: "page", value: page };
+                data[data.length] = { name: "quick_search", value: query };
+                action_form(data, "SEARCH")
             });
 
             $(document).on('keyup', '#quick_search', delay(function () {
                 let query = $('#quick_search').val();
-                let page = $('#hidden_page').val(1);
-                fetch_data(page, query);
+                $('#hidden_page').val(1);
+
+                let data = $("#pochita_form").serializeArray();
+                data[data.length] = { name: "page", value: 1 };
+                data[data.length] = { name: "quick_search", value: query };
+                action_form(data, "SEARCH")
             }, 500));
-            // show_form
-            $(document).on('click', '#pochita_filter_button', function (event) {
-                event.preventDefault();
-                show_form("SEARCH")
-            });
-            // action_form
+
             $(document).on('submit', '#pochita_form', function (event) {
                 event.preventDefault()
                 let data = $(this).serializeArray();
                 let type = $('#type_form').val();
                 action_form(data, type)
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Action Executed !',
+                })
+            })
+
+            $(document).on('click', '#pochita_filter_button', function (event) {
+                event.preventDefault();
+                show_form("SEARCH")
+            });
+
+            $(document).on('click', '#view_bo', function (event) {
+                event.preventDefault()
+                let child = $(this).closest('tr')
+                child.next('.bo_view').show()
+                $('.bo_view').not(child.next('.bo_view')).hide()
             })
         });
-
-        function fetch_data(page, search) {
-            if (page === undefined) {
-                page = 1
-            }
-            $.ajax({
-                url: '{{ route('inventory.receive.show_table') }}',
-                type: 'get',
-                data: "page=" + page + "&quick_search=" + search,
-                beforeSend: function () {
-                    run_waitMe($('#pochita_table_div'), 1, 'facebook');
-                },
-                success: function (data) {
-                    let table = $('#pochita_table_div')
-                    table.html(data);
-                    table.waitMe('hide');
-                }
-            });
-        }
 
         function show_form(type) {
             if (type === "SEARCH") {
@@ -106,15 +104,15 @@
                     success: function (data) {
                         let form = $('#pochita_form_div')
                         form.html(data).ready(function () {
-                            $("#from_order").select2()
+                            let supplier_id = $("#supplier_id")
+                            let date_range = $("#date_range")
                             let start = moment().subtract(29, 'days');
                             let end = moment();
-
+                            supplier_id.select2()
                             function cb(start, end) {
                                 $('#date_range span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
                             }
-
-                            $('#date_range').daterangepicker({
+                            date_range.daterangepicker({
                                 startDate: start,
                                 endDate: end,
                                 ranges: {
@@ -126,8 +124,8 @@
                                     'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
                                 }
                             }, cb);
-
                             cb(start, end);
+                            action_form({type_form : type, date_range : date_range.val()}, type)
                         });
                         $('#type_form').val(type);
                         form.waitMe('hide');
@@ -137,6 +135,7 @@
         }
 
         function action_form(data, type) {
+            console.log(data)
             let url = ''
             let method = ''
             if (type === "SEARCH") {
@@ -151,17 +150,11 @@
                     run_waitMe($('#table_data'), 1, 'facebook');
                 },
                 success: function (data) {
-                    console.log(data)
-                    // if (type !== "SEARCH"){
-                    //     show_form(type)
-                    // }
+                    if (type !== "SEARCH"){
+                        show_form(type)
+                    }
                     let table = $('#pochita_table_div')
-                    // table.html(data);
-                    // Swal.fire({
-                    //     icon: 'success',
-                    //     title: 'Action Executed !',
-                    //     showConfirmButton: true,
-                    // })
+                    table.html(data);
                     table.waitMe('hide');
                 },
                 error: function (e) {

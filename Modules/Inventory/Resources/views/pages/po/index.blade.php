@@ -120,7 +120,6 @@
                         let form = $('#pochita_form_div')
                         form.html(data).ready(function () {
                             $("#supplier_id").select2()
-                            // $("#supplier_id").addClass('form-control')
                             let start = moment().subtract(29, 'days');
                             let end = moment();
 

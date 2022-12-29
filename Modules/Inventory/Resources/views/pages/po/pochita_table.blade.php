@@ -15,6 +15,7 @@
             <tbody>
             @forelse($data as $key => $item)
                 <tr>
+                    <td style="display: none;">{{ $item->id }}</td>
                     <td>{{ $key+1 }}</td>
                     <td>{{ $item->po_code }}</td>
                     <td>{{ $item->inv_supplier->name }}</td>

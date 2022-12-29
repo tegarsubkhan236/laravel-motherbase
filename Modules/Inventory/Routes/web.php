@@ -10,7 +10,7 @@ use Modules\Inventory\Http\Controllers\InvSalesController;
 use Modules\Inventory\Http\Controllers\InvStockController;
 use Modules\Inventory\Http\Controllers\InvSupplierController;
 
-Route::prefix('inventory')->name('inventory.')->group(function () {
+Route::prefix('inventory')->name('inventory.')->middleware('auth')->group(function () {
     Route::prefix('master')->name('master.')->group(function () {
         Route::prefix('supplier')->name('supplier.')->group(function () {
             Route::get('/', [InvSupplierController::class, 'index'])->name('index');
@@ -41,22 +41,15 @@ Route::prefix('inventory')->name('inventory.')->group(function () {
         Route::get('/show_table', [InvPoController::class, 'show_table'])->name('show_table');
         Route::get('/create', [InvPoController::class, 'create'])->name('create');
         Route::post('/store', [InvPoController::class, 'store'])->name('store');
-    });
-    Route::prefix('bo')->name('bo.')->group(function () {
-        Route::get('/', [InvBoController::class, 'index'])->name('index');
-        Route::get('/create', [InvBoController::class, 'create'])->name('create');
-        Route::post('/store', [InvBoController::class, 'store'])->name('store');
-        Route::get('/{inv_bo}/detail', [InvBoController::class, 'show'])->name('detail');
-        Route::get('/{inv_bo}/edit', [InvBoController::class, 'edit'])->name('edit');
-        Route::put('/{inv_bo}/update', [InvBoController::class, 'update'])->name('update');
-        Route::delete('/{inv_bo}/delete', [InvBoController::class, 'delete'])->name('delete');
+        Route::get('/{id}/edit', [InvPoController::class, 'edit'])->name('edit');
+        Route::put('/{id}/update', [InvPoController::class, 'update'])->name('update');
     });
     Route::prefix('receive')->name('receive.')->group(function () {
         Route::get('/', [InvReceiveController::class, 'index'])->name('index');
         Route::get('/show_form', [InvReceiveController::class, 'show_form'])->name('show_form');
         Route::get('/show_table', [InvReceiveController::class, 'show_table'])->name('show_table');
-        Route::get('/create', [InvReceiveController::class, 'create'])->name('create');
-        Route::post('/store', [InvReceiveController::class, 'store'])->name('store');
+        Route::get('/{id}/{type}/create', [InvReceiveController::class, 'create'])->name('create');
+        Route::post('/{id}/{type}/store', [InvReceiveController::class, 'store'])->name('store');
     });
     Route::prefix('sales')->name('sales.')->group(function () {
         Route::get('/', [InvSalesController::class, 'index'])->name('index');

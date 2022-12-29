@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Blog\Http\Controllers\BlogCategoryController;
 use Modules\Blog\Http\Controllers\BlogPostController;
 
-Route::prefix('/blog')->name('blog.')->group(function() {
+Route::prefix('/blog')->name('blog.')->middleware('auth')->group(function() {
     Route::prefix('category')->name('category.')->group(function () {
         Route::get('/', [BlogCategoryController::class, 'index'])->name('index');
         Route::get('/create', [BlogCategoryController::class, 'create'])->name('create');

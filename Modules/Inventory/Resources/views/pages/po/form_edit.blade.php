@@ -28,7 +28,7 @@
                             </div>
                             <div class="mt-3">
                                 <label for="supplier_id">Supplier</label>
-                                <select name="supplier_id" id="supplier_id" class="form-control tom-select">
+                                <select id="supplier_id" name="supplier_id" class="form-control tom-select">
                                     <option value="">-- Select Supplier --</option>
                                     @foreach($supplier as $x)
                                         <option value="{{ $x->id }}">{{ $x->name }}</option>
@@ -37,33 +37,27 @@
                             </div>
                             <div class="mt-3">
                                 <label for="remarks" class="whitespace-nowrap">Remarks</label>
-                                <textarea name="remarks" id="remarks" cols="5" rows="2" class="form-control"
-                                          placeholder="Remarks">{!! !empty($item) ? $item->description : '' !!}</textarea>
+                                <textarea name="remarks" id="remarks" cols="5" rows="2" class="form-control" placeholder="Remarks">{!! !empty($item) ? $item->description : '' !!}</textarea>
                             </div>
                         </div>
                         <div class="col-span-6 xl:col-span-6">
                             <div class="mt-3">
                                 <label for="discount" class="form-label">Discount</label>
                                 <div class="form-check mt-2">
-                                    <input id="discount_nominal" class="form-check-input" type="radio" name="discount"
-                                           value="discount_nominal">
+                                    <input id="discount_nominal" class="form-check-input" type="radio" name="discount" value="discount_nominal">
                                     <label class="form-check-label" for="discount_nominal">Nominal</label>
 
                                     <div class="input-group w-full" id="discount_nominal_input" style="display: none">
-                                        <input name="discount_nominal" type="number" class="form-control ml-8"
-                                               placeholder="Discount Nominal">
+                                        <input name="discount_nominal" type="number" class="form-control ml-8" placeholder="Discount Nominal">
                                         <div class="input-group-text">Rp</div>
                                     </div>
                                 </div>
                                 <div class="form-check mt-2">
-                                    <input id="discount_percentage" class="form-check-input" type="radio"
-                                           name="discount" value="discount_percentage">
+                                    <input id="discount_percentage" class="form-check-input" type="radio" name="discount" value="discount_percentage">
                                     <label class="form-check-label" for="discount_percentage">Percentage</label>
 
-                                    <div class="input-group w-full" id="discount_percentage_input"
-                                         style="display: none">
-                                        <input name="discount_percentage" type="number" class="form-control ml-4"
-                                               placeholder="Discount Percentage">
+                                    <div class="input-group w-full" id="discount_percentage_input" style="display: none">
+                                        <input name="discount_percentage" type="number" class="form-control ml-4" placeholder="Discount Percentage">
                                         <div class="input-group-text">%</div>
                                     </div>
                                 </div>
@@ -71,24 +65,20 @@
                             <div class="mt-3">
                                 <label for="tax" class="form-label">Tax</label>
                                 <div class="form-check mt-2">
-                                    <input id="tax_nominal" class="form-check-input" type="radio" name="tax"
-                                           value="tax_nominal">
+                                    <input id="tax_nominal" class="form-check-input" type="radio" name="tax" value="tax_nominal">
                                     <label class="form-check-label" for="tax_nominal">Nominal</label>
 
                                     <div class="input-group w-full" id="tax_nominal_input" style="display: none">
-                                        <input name="tax_nominal" type="number" class="form-control ml-8"
-                                               placeholder="Tax Nominal">
+                                        <input name="tax_nominal" type="number" class="form-control ml-8" placeholder="Tax Nominal">
                                         <div class="input-group-text">Rp</div>
                                     </div>
                                 </div>
                                 <div class="form-check mt-2">
-                                    <input id="tax_percentage" class="form-check-input" type="radio" name="tax"
-                                           value="tax_percentage">
+                                    <input id="tax_percentage" class="form-check-input" type="radio" name="tax" value="tax_percentage">
                                     <label class="form-check-label" for="tax_percentage">Percentage</label>
 
                                     <div class="input-group w-full" id="tax_percentage_input" style="display: none">
-                                        <input name="tax_percentage" type="number" class="form-control ml-4"
-                                               placeholder="Tax Percentage">
+                                        <input name="tax_percentage" type="number" class="form-control ml-4" placeholder="Tax Percentage">
                                         <div class="input-group-text">%</div>
                                     </div>
                                 </div>
@@ -97,7 +87,7 @@
                     </div>
 
                     {{--PO CHILDREN--}}
-                    <div class="w-full mt-10 flex-1" id="pochita_item_table_div" style="display: none">
+                    <div class="w-full mt-10 flex-1" id="pochita_item_table_div">
                         <div class="overflow-x-auto">
                             <table class="table border" id="pochita_item_table">
                                 <thead>
@@ -166,9 +156,6 @@
                     </div>
 
                     <div class="text-right mt-5">
-                        <button type="button" class="btn btn-outline-secondary w-24 mr-1" id="pochita_reset_form">
-                            Reset
-                        </button>
                         <button type="submit" class="btn btn-primary w-24" id="pochita_submit_form">{{ $button_title }}</button>
                     </div>
                 </div>
@@ -184,7 +171,6 @@
             Items: {}
         }
         let rowIdx = 0;
-
         $(document).ready(function () {
             let supplier_id = $('#supplier_id'),
                 selector_tax_nominal = $('#tax_nominal_input'),
@@ -193,22 +179,8 @@
                 selector_discount_percentage = $('#discount_percentage_input'),
                 pochita_item_table_div = $('#pochita_item_table_div'),
                 pochita_form = $('#pochita_form'),
-                pochita_reset_form = $('#pochita_reset_form'),
                 pochita_add_row = $('#pochita_add_row'),
                 pochita_item_table_body = $('#pochita_item_table_body')
-
-            pochita_reset_form.on('click', function () {
-                pochita_form.trigger("reset");
-                pochita_item_table_div.hide()
-                selector_tax_nominal.hide();
-                selector_tax_percentage.hide();
-                selector_discount_nominal.hide();
-                selector_discount_percentage.hide();
-                selector_tax_nominal.find('input[type=number]').val(null);
-                selector_tax_percentage.find('input[type=number]').val(null);
-                selector_discount_nominal.find('input[type=number]').val(null);
-                selector_discount_percentage.find('input[type=number]').val(null);
-            })
 
             $('input[name="tax"]').on('change', function (ev) {
                 if (ev.target.value === "tax_nominal") {
@@ -415,8 +387,13 @@
                             text: 'Purchase Order has been created with code '+ data.po_code,
                             showConfirmButton: true,
                         })
-                        $('#pochita_submit_form').attr('disabled', true)
-                        $('#pochita_reset_form').attr('disabled', true)
+                        $('#pochita_submit_form').prop('disabled', true)
+                        $('#pochita_reset_form').prop('disabled', true)
+                        $('.items').css('opacity','0.4').css('pointer-event','none')
+                        $('.ts-dropdown').remove();
+                        $('#pochita_form').find("input,textarea,select").prop("disabled", true);
+                        $("#pochita_item_table").find("input,button,textarea,select").prop("disabled", true);
+                        $('#pochita_add_row').remove()
                         pochita_form.waitMe('hide');
                     },
                     error: function (e) {

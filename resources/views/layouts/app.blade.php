@@ -26,7 +26,7 @@
         @include('components.desktop-menu')
         <!-- END: Side Menu -->
         <!-- BEGIN: Content -->
-        <div class="content">
+        <div class="content" id="content">
             @yield('content')
         </div>
         <!-- END: Content -->
@@ -84,6 +84,13 @@
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
         });
+
+        $(document).ready(function () {
+            $('.test_a').on('click', function (e) {
+                e.preventDefault()
+                $('#content').html('<h2>Hallo World</h2>')
+            })
+        })
     </script>
     @stack('js')
     <!-- END: JS Assets-->
